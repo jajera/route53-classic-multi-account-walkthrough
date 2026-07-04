@@ -1,0 +1,70 @@
+---
+title: Security Boundaries
+description: What VPC association grants and does not grant — DNS control plane vs network and IAM access
+---
+
+## Summary
+
+Classic VPC association affects the **DNS control plane only**. It is not network connectivity and not IAM cross-account access.
+
+Read this section before [Phase 2a](/walkthrough/05-phases/#phase-2a--network-phz-and-authorizations).
+
+## Cross-account two-step contract
+
+1. **Network_Account** creates `VPCAssociationAuthorization` for an exact `vpc_id` + `vpc_region`
+2. **VPC-owning account** calls `AssociateVPCWithHostedZone`
+
+Same-account associations skip step 1.
+
+## What association grants
+
+| Grants         | Detail                                                                 |
+| -------------- | ---------------------------------------------------------------------- |
+| DNS resolution | Associated VPCs resolve **Platform_Zone** records via the VPC resolver |
+| Record control | **Network_Account** retains exclusive CRUD on record sets              |
+
+## What association does not grant
+
+| Does not grant   | Detail                                                                        |
+| ---------------- | ----------------------------------------------------------------------------- |
+| Network path     | `dig` success does not mean traffic routes to record IP targets               |
+| IAM access       | No cross-account role trust or resource access                                |
+| Local PHZ copies | Workload accounts must not create duplicate private zones for the same domain |
+
+## Security properties of classic authorization
+
+- **Explicit allow-list** — network authorizes specific VPC IDs; no account-wide associate permission
+- **Region-scoped** — `vpc_region` on authorization must match the target VPC's region
+- **Auditable two-step** — authorization and association are separate API calls with separate CloudTrail events
+- **Revocable** — disassociate the VPC, then delete the authorization; resolution stops from that VPC
+
+## IAM permissions (reference)
+
+The source demo uses SSO `AdministratorAccess` per account. For production, scope Route 53 actions per account role:
+
+| Account              | Typical Route 53 actions                                                                                                                                   |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Network (zone owner) | `CreateVPCAssociationAuthorization`, `DeleteVPCAssociationAuthorization`, `ChangeResourceRecordSets`, `GetHostedZone`, same-account associate/disassociate |
+| Workload (VPC owner) | `AssociateVPCWithHostedZone`, `DisassociateVPCFromHostedZone`, `ListHostedZonesByVPC`                                                                      |
+
+The source demo does not ship custom Route 53 IAM policies.
+
+## Teardown security
+
+Route 53 rejects hosted zone deletion while cross-account associations exist. Follow [Teardown](/walkthrough/08-teardown/) order: disassociate workload VPCs before destroying the network stack.
+
+## Intentionally excluded (security hardening)
+
+Out of demo scope but relevant at scale:
+
+- Resolver query logging
+- Route 53 DNS Firewall
+- SCPs restricting `AssociateVPCWithHostedZone` to approved roles
+- Route 53 Profiles / RAM for centralised lifecycle management
+
+See [Why Classic](/walkthrough/02-why-classic/) for pattern tradeoffs.
+
+## Related pages
+
+- [Association Scenarios](/architecture/02-association-scenarios/)
+- [Pre-flight](/walkthrough/04-preflight/) — before Phase 2a apply

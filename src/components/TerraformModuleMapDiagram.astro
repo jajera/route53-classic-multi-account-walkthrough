@@ -1,0 +1,59 @@
+---
+/** Terraform module layout in the source demo repository */
+---
+
+<figure class="doc-diagram module-map-diagram">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 560 310"
+    fill="none"
+    role="img"
+    aria-label="Terraform directory layout: modules for vpc, private-hosted-zone, cross-account-auth, workload-stack, and test-ec2; account stacks under accounts/"
+  >
+    <rect class="frame" x="1" y="1" width="558" height="308" rx="10"></rect>
+
+    <text class="dir" x="24" y="36">terraform/</text>
+
+    <path class="tree" d="M 24 44 L 24 58 L 48 58"></path>
+    <text class="dir" x="48" y="62">modules/</text>
+
+    <path class="tree" d="M 48 70 L 48 84 L 72 84"></path>
+    <text class="file" x="72" y="88">vpc/</text>
+    <text class="comment" x="130" y="88">DNS-enabled VPC, subnets, SSM, NAT</text>
+
+    <path class="tree" d="M 48 98 L 48 112 L 72 112"></path>
+    <text class="file" x="72" y="116">private-hosted-zone/</text>
+    <text class="comment" x="220" y="116">PHZ, records, primary association</text>
+
+    <path class="tree" d="M 48 126 L 48 140 L 72 140"></path>
+    <text class="file" x="72" y="144">cross-account-auth/</text>
+    <text class="comment" x="220" y="144">VPC association authorizations</text>
+
+    <path class="tree" d="M 48 154 L 48 168 L 72 168"></path>
+    <text class="file" x="72" y="172">workload-stack/</text>
+    <text class="comment" x="200" y="172">VPC + association + test-ec2</text>
+
+    <path class="tree" d="M 48 182 L 48 196 L 72 196"></path>
+    <text class="file" x="72" y="200">test-ec2/</text>
+    <text class="comment" x="150" y="200">Minimal EC2 with SSM profile</text>
+
+    <path class="tree" d="M 24 214 L 24 228 L 48 228"></path>
+    <text class="dir" x="48" y="232">accounts/</text>
+
+    <path class="tree" d="M 48 240 L 48 254 L 72 254"></path>
+    <text class="file" x="72" y="258">network/</text>
+    <text class="comment" x="150" y="258">PHZ, auth, secondary assoc, test-ec2</text>
+
+    <path class="tree" d="M 48 268 L 48 282 L 72 282"></path>
+    <text class="file" x="72" y="286">network-apse6/</text>
+    <text class="comment" x="190" y="286">Same-account cross-region</text>
+
+    <path class="tree" d="M 48 296 L 72 296"></path>
+    <text class="file" x="72" y="300">dev-*, sandbox-*</text>
+    <text class="comment" x="210" y="300">Cross-account stacks</text>
+  </svg>
+</figure>
+
+<style is:global>
+  @import "./doc-diagram.css";
+</style>

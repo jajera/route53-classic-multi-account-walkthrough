@@ -1,0 +1,75 @@
+---
+/** Account topology — PHZ, VPC associations, and cross-account authorizations */
+import { topologyWidth, topologyHeight, topologyDiagramInner } from "../../scripts/topology-diagram-content.mjs";
+---
+
+<figure class="doc-diagram topology-diagram">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox={`0 0 ${topologyWidth} ${topologyHeight}`}
+    fill="none"
+    role="img"
+    aria-label="Network account Platform_Zone with same-account VPC associations and cross-account authorizations to dev and sandbox VPCs"
+  >
+    <defs>
+      <marker
+        id="topology-arrow-solid"
+        markerWidth="8"
+        markerHeight="8"
+        refX="7"
+        refY="4"
+        orient="auto"
+      >
+        <polygon class="arrow-head" points="0 0, 8 4, 0 8"></polygon>
+      </marker>
+      <marker
+        id="topology-arrow-dashed"
+        markerWidth="8"
+        markerHeight="8"
+        refX="7"
+        refY="4"
+        orient="auto"
+      >
+        <polygon class="arrow-head-dashed" points="0 0, 8 4, 0 8"></polygon>
+      </marker>
+    </defs>
+
+    <rect class="frame" x="1" y="1" width="978" height="478" rx="10"></rect>
+    <g set:html={topologyDiagramInner} />
+  </svg>
+</figure>
+
+<style is:global>
+  @import "./doc-diagram.css";
+
+  .topology-diagram svg {
+    max-width: 980px;
+  }
+
+  .topology-diagram .section-label {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .topology-diagram .legend-line {
+    stroke: var(--sl-color-gray-4);
+    stroke-width: 1.5;
+  }
+
+  .topology-diagram .legend-line.cross {
+    stroke: var(--sl-color-accent);
+  }
+
+  .topology-diagram .legend-line.dashed {
+    stroke: var(--sl-color-gray-3);
+    stroke-dasharray: 5 4;
+  }
+
+  .topology-diagram .legend-text {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system);
+    font-size: 10px;
+  }
+</style>

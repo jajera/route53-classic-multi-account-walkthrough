@@ -1,0 +1,75 @@
+---
+/** DNS query path from Test_EC2 to Platform_Zone records */
+---
+
+<figure class="doc-diagram dns-diagram">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 780 120"
+    fill="none"
+    role="img"
+    aria-label="DNS resolution path: Test_EC2 queries VPC resolver, Route 53 returns Platform_Zone A records"
+  >
+    <defs>
+      <marker
+        id="dns-arrow"
+        markerWidth="8"
+        markerHeight="8"
+        refX="7"
+        refY="4"
+        orient="auto"
+      >
+        <polygon class="arrow-head" points="0 0, 8 4, 0 8"></polygon>
+      </marker>
+    </defs>
+
+    <rect class="frame" x="1" y="1" width="778" height="118" rx="10"></rect>
+
+    <rect class="node" x="20" y="36" width="118" height="48" rx="6"></rect>
+    <text class="node-label" x="79" y="58" text-anchor="middle">Test_EC2</text>
+    <text class="detail" x="79" y="72" text-anchor="middle">any VPC</text>
+
+    <rect class="node" x="168" y="36" width="132" height="48" rx="6"></rect>
+    <text class="node-label" x="234" y="58" text-anchor="middle"
+      >VPC DNS Resolver</text
+    >
+    <text class="detail" x="234" y="72" text-anchor="middle"
+      >AmazonProvidedDNS</text
+    >
+
+    <rect class="node" x="330" y="36" width="118" height="48" rx="6"></rect>
+    <text class="node-label" x="389" y="64" text-anchor="middle"
+      >Route 53 Resolver</text
+    >
+
+    <rect class="node accent" x="478" y="36" width="132" height="48" rx="6"
+    ></rect>
+    <text class="node-label" x="544" y="58" text-anchor="middle"
+      >Platform_Zone</text
+    >
+    <text class="detail" x="544" y="72" text-anchor="middle"
+      >platform.demo.local</text
+    >
+
+    <rect class="node" x="640" y="36" width="120" height="48" rx="6"></rect>
+    <text class="node-label" x="700" y="58" text-anchor="middle">A records</text>
+    <text class="detail" x="700" y="72" text-anchor="middle"
+      >api / db → 10.0.x.x</text
+    >
+
+    <path class="link cross" d="M 138 60 L 168 60" marker-end="url(#dns-arrow)"
+    ></path>
+    <path class="link cross" d="M 300 60 L 330 60" marker-end="url(#dns-arrow)"
+    ></path>
+    <path class="link cross" d="M 448 60 L 478 60" marker-end="url(#dns-arrow)"
+    ></path>
+    <path class="link cross" d="M 610 60 L 640 60" marker-end="url(#dns-arrow)"
+    ></path>
+
+    <text class="edge-label" x="153" y="52" text-anchor="middle">dig query</text>
+  </svg>
+</figure>
+
+<style is:global>
+  @import "./doc-diagram.css";
+</style>

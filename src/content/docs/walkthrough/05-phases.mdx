@@ -1,0 +1,167 @@
+---
+title: Deployment Phases
+description: Phased terraform apply steps for the source demo — Phase 1 through Phase 3 with dependency reasoning
+---
+
+import Callout from "@/components/Callout.astro";
+import PhaseDiagram from "@/components/PhaseDiagram.astro";
+import Tooltip from "@/components/Tooltip.astro";
+
+All commands run from the [source demo repository](https://github.com/jajera/route53-multi-account-dns-demo) root. Complete [Pre-flight](/walkthrough/04-preflight/) checks before each apply.
+
+<PhaseDiagram />
+
+## Phase 1 — All VPCs
+
+### Why this phase runs first
+
+The network account's `cross-account-auth` module creates a <Tooltip term="vpc-association-authorization" label="VPCAssociationAuthorization" /> for each workload VPC. That requires the target VPC to **already exist** with a real `vpc_id`. Workload VPCs must exist before network can authorize them in Phase 2a.
+
+### Deployment flags
+
+Every stack in Phase 1 deploys **VPC only**:
+
+| Stack                                | Flags                                                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------ |
+| `network`                            | `enable_phz=false`, `enable_cross_account_auth=false`, `enable_test_ec2=false` |
+| `network-apse6`, all workload stacks | `enable_zone_association=false`, `enable_test_ec2=false`                       |
+
+### Apply order
+
+Apply workload stacks first (any order), then `network-apse6`, then `network`. Example — **dev-apse2**:
+
+```bash
+export AWS_PROFILE=r53demo-dev
+aws sts get-caller-identity
+
+terraform -chdir=terraform/accounts/dev-apse2 init
+terraform -chdir=terraform/accounts/dev-apse2 validate
+terraform -chdir=terraform/accounts/dev-apse2 apply \
+  -var="enable_zone_association=false" \
+  -var="enable_test_ec2=false"
+
+terraform -chdir=terraform/accounts/dev-apse2 output vpc_id
+```
+
+Repeat for: `dev-apse6`, `sandbox-apse2`, `sandbox-apse6`, `network-apse6`, and `network` (with network-specific flags above).
+
+**Expected Phase 1 signal:** `vpc_id` populated; `test_ec2_instance_id` empty; `zone_id` empty on `network`.
+
+### Capture outputs
+
+Save all four workload VPC IDs for Phase 2a in `terraform/accounts/network/terraform.tfvars`:
+
+```hcl
+dev_apse2_vpc_id     = "vpc-xxxxxxxx"
+dev_apse6_vpc_id     = "vpc-xxxxxxxx"
+sandbox_apse2_vpc_id = "vpc-xxxxxxxx"
+sandbox_apse6_vpc_id = "vpc-xxxxxxxx"
+```
+
+<Callout type="note" title="Authorization specificity">
+  <Tooltip term="authorization-specificity" label="Authorization_Specificity" />{" "}
+  applies: if a workload VPC is destroyed and recreated later (new `vpc_id`),
+  update `network/terraform.tfvars` and re-apply Phase 2a before Phase 3.
+</Callout>
+
+---
+
+## Phase 2a — Network PHZ and authorizations
+
+### Why this phase runs second
+
+Route 53 requires the <Tooltip term="platform-zone" label="Platform_Zone" /> to exist and (for cross-account VPCs) a matching <Tooltip term="vpc-association-authorization" label="VPC_Association_Authorization" /> per exact `vpc_id` and `vpc_region`. See [Association Scenarios](/architecture/02-association-scenarios/).
+
+Phase 2a creates:
+
+- The <Tooltip term="phz" label="PHZ" /> and A records (`api`, `db`)
+- Same-account secondary VPC association (no authorization)
+- Four cross-account authorizations
+- Two <Tooltip term="test-ec2" label="Test EC2" /> instances in `ap-southeast-2`
+
+### Apply network stack
+
+```bash
+export AWS_PROFILE=r53demo-network
+aws sts get-caller-identity
+
+terraform -chdir=terraform/accounts/network init
+terraform -chdir=terraform/accounts/network validate
+terraform -chdir=terraform/accounts/network apply \
+  -var-file=terraform/accounts/network/terraform.tfvars
+
+terraform -chdir=terraform/accounts/network output zone_id
+```
+
+**Expected Phase 2a signal:** `zone_id` populated (copy from `terraform output zone_id`); `test_ec2_instance_id_primary` and `_secondary` populated.
+
+### Capture zone_id
+
+Set `zone_id` in `terraform.tfvars` for `network-apse6` and all four workload stacks:
+
+```hcl
+zone_id = "Z0xxxxxxxxxxxx"
+```
+
+---
+
+## Phase 2b — Network ap-southeast-6
+
+### Why this is separate
+
+Same-account <Tooltip term="cross-region-sharing" label="cross-region" /> association does **not** require `VPCAssociationAuthorization` — only `zone_id`.
+
+```bash
+export AWS_PROFILE=r53demo-network
+aws sts get-caller-identity
+
+terraform -chdir=terraform/accounts/network-apse6 init
+terraform -chdir=terraform/accounts/network-apse6 validate
+terraform -chdir=terraform/accounts/network-apse6 apply \
+  -var-file=terraform/accounts/network-apse6/terraform.tfvars
+
+terraform -chdir=terraform/accounts/network-apse6 output
+```
+
+**Expected signal:** `test_ec2_instance_id` populated; association active for `ap-southeast-6` VPC.
+
+---
+
+## Phase 3 — Workload associations and Test EC2
+
+### Why this phase runs third
+
+Cross-account associations require Phase 2a authorizations. <Tooltip term="vpc-association" label="AssociateVPCWithHostedZone" /> without a matching authorization returns `AccessDenied`.
+
+| Flag                      | Value  |
+| ------------------------- | ------ |
+| `enable_zone_association` | `true` |
+| `enable_test_ec2`         | `true` |
+
+Run [Phase 3 pre-flight](/walkthrough/04-preflight/#phase-3-pre-flight--vpc-id-match) before applying.
+
+### Apply each workload stack
+
+Example — **dev-apse2**:
+
+```bash
+export AWS_PROFILE=r53demo-dev
+aws sts get-caller-identity
+
+terraform -chdir=terraform/accounts/dev-apse2 init
+terraform -chdir=terraform/accounts/dev-apse2 validate
+terraform -chdir=terraform/accounts/dev-apse2 apply \
+  -var-file=terraform/accounts/dev-apse2/terraform.tfvars
+
+terraform -chdir=terraform/accounts/dev-apse2 output
+```
+
+Repeat for `dev-apse6`, `sandbox-apse2`, and `sandbox-apse6` with the matching profile (`r53demo-dev` or `r53demo-sandbox`).
+
+### Phase 3 complete
+
+After Phase 3, seven <Tooltip term="test-ec2" label="Test EC2" /> instances exist across all <Tooltip term="association-scenario" label="association scenarios" />. Proceed to [Verification](/walkthrough/06-verification/).
+
+## Next step
+
+[Verification](/walkthrough/06-verification/) — seven DNS tests with expected `dig` output.

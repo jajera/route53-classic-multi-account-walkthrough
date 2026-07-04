@@ -1,0 +1,107 @@
+---
+/** Phased deployment flow — uses Starlight theme tokens for light/dark mode */
+---
+
+<figure class="phase-diagram">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 880 220"
+    fill="none"
+    role="img"
+    aria-label="Phased deployment: Phase 1 to Phase 2a, then Phase 2b and Phase 3 in parallel"
+  >
+    <defs>
+      <marker
+        id="phase-arrowhead-inline"
+        markerWidth="8"
+        markerHeight="8"
+        refX="7"
+        refY="4"
+        orient="auto"
+      >
+        <polygon class="arrow-head" points="0 0, 8 4, 0 8"></polygon>
+      </marker>
+    </defs>
+    <rect class="frame" x="1" y="1" width="878" height="218" rx="10"></rect>
+    <path
+      class="arrow"
+      d="M 224 117 L 244 117"
+      marker-end="url(#phase-arrowhead-inline)"></path>
+    <path
+      class="arrow"
+      d="M 444 117 L 540 117 L 540 59 L 660 59"
+      marker-end="url(#phase-arrowhead-inline)"></path>
+    <path
+      class="arrow"
+      d="M 540 117 L 540 165 L 660 165"
+      marker-end="url(#phase-arrowhead-inline)"></path>
+    <rect class="box" x="24" y="82" width="200" height="70" rx="8"></rect>
+    <text class="title" x="124" y="112" text-anchor="middle">Phase 1</text>
+    <text class="desc" x="124" y="132" text-anchor="middle"
+      >All 6 stacks: VPC only</text
+    >
+    <rect class="box" x="244" y="82" width="200" height="70" rx="8"></rect>
+    <text class="title" x="344" y="112" text-anchor="middle">Phase 2a</text>
+    <text class="desc" x="344" y="132" text-anchor="middle"
+      >network: PHZ + auth + EC2</text
+    >
+    <rect class="box" x="660" y="24" width="200" height="70" rx="8"></rect>
+    <text class="title" x="760" y="54" text-anchor="middle">Phase 2b</text>
+    <text class="desc" x="760" y="74" text-anchor="middle"
+      >network-apse6: association</text
+    >
+    <rect class="box" x="660" y="130" width="200" height="70" rx="8"></rect>
+    <text class="title" x="760" y="160" text-anchor="middle">Phase 3</text>
+    <text class="desc" x="760" y="180" text-anchor="middle"
+      >4 workload stacks</text
+    >
+  </svg>
+</figure>
+
+<style>
+  .phase-diagram {
+    margin: 1rem 0;
+  }
+
+  .phase-diagram svg {
+    display: block;
+    width: 100%;
+    max-width: 880px;
+    height: auto;
+  }
+
+  .frame {
+    fill: var(--sl-color-gray-6);
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 1.5;
+  }
+
+  .box {
+    fill: var(--sl-color-gray-6);
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 1.5;
+  }
+
+  .title {
+    fill: var(--sl-color-text);
+    font-family: var(--sl-font-system);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .desc {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system);
+    font-size: 12px;
+  }
+
+  .arrow {
+    stroke: var(--sl-color-accent);
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  .arrow-head {
+    fill: var(--sl-color-accent);
+  }
+</style>

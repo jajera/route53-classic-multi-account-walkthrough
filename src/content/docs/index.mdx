@@ -1,0 +1,69 @@
+---
+title: Route 53 Classic Multi-Account Walkthrough
+description: Progressive walkthrough for classic Route 53 private DNS sharing across AWS accounts and regions
+template: splash
+hero:
+  tagline: Share one Route 53 private hosted zone across three AWS accounts and two regions — classic VPC association authorization, no Profiles or RAM
+  actions:
+    - text: Get Started
+      link: /walkthrough/01-overview/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/jajera/route53-multi-account-dns-demo/tree/1-first-release
+      icon: external
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+import Tooltip from "@/components/Tooltip.astro";
+
+## What you'll build
+
+<CardGrid>
+  <Card
+    title="Share one private zone"
+    icon="rocket"
+    link="/architecture/01-system-overview/"
+  >
+    A single <Tooltip term="platform-zone" label="Platform_Zone" /> in the
+    network account — dev and sandbox VPCs resolve the same records with no
+    local PHZ copies, spanning{" "}
+    <Tooltip term="cross-account-sharing" label="cross-account" /> and{" "}
+    <Tooltip term="cross-region-sharing" label="cross-region" /> associations.
+  </Card>
+  <Card
+    title="Authorize and associate"
+    icon="setting"
+    link="/architecture/02-association-scenarios/"
+  >
+    The classic <Tooltip term="route53" label="Route 53" /> sharing contract:{" "}
+    <Tooltip
+      term="vpc-association-authorization"
+      label="VPC association authorization"
+    />{" "}
+    in the zone owner, then{" "}
+    <Tooltip term="vpc-association" label="VPC association" /> in the workload
+    account — four{" "}
+    <Tooltip term="association-scenario" label="association scenarios" /> in one
+    demo.
+  </Card>
+  <Card
+    title="Prove shared resolution"
+    icon="open-book"
+    link="/walkthrough/06-verification/"
+  >
+    Every associated VPC — owner, cross-account, and cross-region — resolves{" "}
+    `api.platform.demo.local` from the same shared{" "}
+    <Tooltip term="phz" label="PHZ" /> records, proving{" "}
+    <Tooltip term="route53" label="Route 53" /> sharing end to end.
+  </Card>
+  <Card
+    title="Understand the pattern"
+    icon="document"
+    link="/walkthrough/02-why-classic/"
+  >
+    When classic PHZ sharing fits, what association does and does not grant, and
+    why this walkthrough uses authorization APIs instead of Route 53 Profiles or
+    RAM.
+  </Card>
+</CardGrid>

@@ -1,0 +1,63 @@
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+
+const svgOut = join(process.cwd(), "public/sharing-flow-diagram.svg");
+
+const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="210" viewBox="0 0 720 210" fill="none" role="img" aria-label="Network account owns Platform_Zone and creates VPCAssociationAuthorization in Phase 2a; workload account creates AssociateVPCWithHostedZone in Phase 3">
+  <defs>
+    <marker id="sharing-flow-arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <polygon class="arrow-head" points="0 0, 8 4, 0 8"/>
+    </marker>
+    <style>
+      .diagram-frame { fill: #1e2836; stroke: #3d4f63; stroke-width: 1.5; }
+      .column-title { fill: #f4f1f8; font-family: sans-serif; font-size: 13px; font-weight: 600; }
+      .column-rule { stroke: #3d4f63; stroke-width: 1.5; }
+      .node { fill: #243040; stroke: #3d4f63; stroke-width: 1.5; }
+      .node.accent { stroke: #7B68EE; }
+      .node-label { fill: #f4f1f8; font-family: ui-monospace, monospace; font-size: 12px; font-weight: 500; }
+      .detail { fill: #94a3b8; font-family: sans-serif; font-size: 11px; }
+      .phase { fill: #94a3b8; font-family: sans-serif; font-size: 11px; }
+      .spine { stroke: #64748b; stroke-width: 1.5; fill: none; }
+      .arrow { stroke: #7B68EE; stroke-width: 1.5; fill: none; }
+      .arrow-head { fill: #7B68EE; }
+      @media (prefers-color-scheme: light) {
+        .diagram-frame { fill: #f8fafc; stroke: #c5cdd6; }
+        .column-title { fill: #1f2937; }
+        .column-rule { stroke: #c5cdd6; }
+        .node { fill: #eef1f5; stroke: #c5cdd6; }
+        .node.accent { stroke: #6d5f95; }
+        .node-label { fill: #1f2937; }
+        .detail, .phase { fill: #4b5563; }
+        .spine { stroke: #9ca3af; }
+        .arrow { stroke: #6d5f95; }
+        .arrow-head { fill: #6d5f95; }
+      }
+    </style>
+  </defs>
+  <rect class="diagram-frame" x="1" y="1" width="718" height="208" rx="10"/>
+  <text class="column-title" x="180" y="22" text-anchor="middle">Network_Account</text>
+  <line class="column-rule" x1="20" y1="30" x2="340" y2="30"/>
+  <text class="column-title" x="540" y="22" text-anchor="middle">Workload account (dev / sandbox)</text>
+  <line class="column-rule" x1="380" y1="30" x2="700" y2="30"/>
+  <rect class="node" x="60" y="48" width="240" height="40" rx="6"/>
+  <text class="node-label" x="180" y="73" text-anchor="middle">Platform_Zone</text>
+  <rect class="node" x="420" y="48" width="240" height="40" rx="6"/>
+  <text class="node-label" x="540" y="73" text-anchor="middle">VPC</text>
+  <path class="spine" d="M 180 88 L 180 108"/>
+  <path class="spine" d="M 540 88 L 540 108"/>
+  <path class="spine" d="M 180 108 L 120 108"/>
+  <text class="detail" x="120" y="124" text-anchor="middle">records (api, db)</text>
+  <path class="spine" d="M 180 108 L 180 138"/>
+  <path class="spine" d="M 540 108 L 540 138"/>
+  <rect class="node accent" x="40" y="138" width="280" height="48" rx="6"/>
+  <text class="node-label" x="180" y="160" text-anchor="middle">VPCAssociationAuthorization</text>
+  <text class="phase" x="180" y="176" text-anchor="middle">(Phase 2a)</text>
+  <rect class="node accent" x="400" y="138" width="280" height="48" rx="6"/>
+  <text class="node-label" x="540" y="160" text-anchor="middle">AssociateVPCWithHostedZone</text>
+  <text class="phase" x="540" y="176" text-anchor="middle">(Phase 3)</text>
+  <path class="arrow" d="M 320 162 L 400 162" marker-end="url(#sharing-flow-arrowhead)"/>
+</svg>`;
+
+writeFileSync(svgOut, svg);
+console.log(`Wrote ${svgOut}`);

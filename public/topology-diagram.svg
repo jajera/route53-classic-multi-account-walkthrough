@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="480" viewBox="0 0 980 480" fill="none" role="img" aria-label="Network account Platform_Zone with same-account VPC associations and cross-account authorizations to dev and sandbox VPCs">
+  <defs>
+    <marker id="arrow-solid" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon class="arrow-head" points="0 0, 8 4, 0 8"/></marker>
+    <marker id="arrow-dashed" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon class="arrow-head-dashed" points="0 0, 8 4, 0 8"/></marker>
+    <style>
+  
+  .diagram-frame { fill: #1e2836; stroke: #3d4f63; stroke-width: 1.5; }
+  @media (prefers-color-scheme: light) {
+    .diagram-frame { fill: #f8fafc; stroke: #c5cdd6; }
+  }
+
+  .panel { fill: #243040; stroke: #3d4f63; stroke-width: 1; }
+  .panel.network { stroke: #7B68EE; stroke-opacity: 0.45; }
+  .panel-title { fill: #f4f1f8; font-family: sans-serif; font-size: 13px; font-weight: 600; }
+  .node { fill: #243040; stroke: #3d4f63; stroke-width: 1.5; }
+  .node.accent, .node.ok { stroke: #7B68EE; }
+  .node.auth { stroke: #64748b; stroke-dasharray: 4 3; }
+  .node.fail { stroke: #e57373; }
+  .node-label { fill: #f4f1f8; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; }
+  .node-label.small { font-size: 10px; }
+  .detail, .edge-label { fill: #94a3b8; font-family: sans-serif; font-size: 10px; }
+  .edge-label { font-size: 9px; }
+  .link { stroke: #64748b; stroke-width: 1.5; fill: none; }
+  .link.cross { stroke: #7B68EE; }
+  .link.dashed { stroke: #94a3b8; stroke-dasharray: 5 4; }
+  .arrow-head { fill: #7B68EE; }
+  .arrow-head-dashed { fill: #94a3b8; }
+  .diamond { fill: #243040; stroke: #7B68EE; stroke-width: 1.5; }
+  .dir, .file { fill: #f4f1f8; font-family: ui-monospace, monospace; font-size: 12px; }
+  .file { fill: #b8a9e8; }
+  .comment { fill: #94a3b8; font-family: sans-serif; font-size: 11px; }
+  .tree { stroke: #64748b; stroke-width: 1.5; fill: none; }
+  @media (prefers-color-scheme: light) {
+    .panel { fill: #eef1f5; stroke: #c5cdd6; }
+    .panel.network { stroke: #6d5f95; }
+    .panel-title, .node-label, .dir { fill: #1f2937; }
+    .node { fill: #eef1f5; stroke: #c5cdd6; }
+    .node.accent, .node.ok { stroke: #6d5f95; }
+    .node.auth { stroke: #9ca3af; }
+    .detail, .edge-label, .comment { fill: #4b5563; }
+    .link { stroke: #9ca3af; }
+    .link.cross { stroke: #6d5f95; }
+    .link.dashed { stroke: #6b7280; }
+    .arrow-head { fill: #6d5f95; }
+    .arrow-head-dashed { fill: #6b7280; }
+    .diamond { fill: #eef1f5; stroke: #6d5f95; }
+    .file { fill: #5b4d8a; }
+    .tree { stroke: #9ca3af; }
+  }
+
+  .section-label { fill: #94a3b8; font-family: sans-serif; font-size: 11px; font-weight: 600; }
+  .legend-line { stroke: #64748b; stroke-width: 1.5; }
+  .legend-line.cross { stroke: #7B68EE; }
+  .legend-line.dashed { stroke: #94a3b8; stroke-dasharray: 5 4; }
+  .legend-text { fill: #94a3b8; font-family: sans-serif; font-size: 10px; }
+  @media (prefers-color-scheme: light) {
+    .section-label, .legend-text { fill: #4b5563; }
+    .legend-line { stroke: #9ca3af; }
+    .legend-line.cross { stroke: #6d5f95; }
+    .legend-line.dashed { stroke: #6b7280; }
+  }
+</style>
+  </defs>
+  <rect class="diagram-frame" x="1" y="1" width="978" height="478" rx="10"/>
+  
+  <rect class="panel network" x="20" y="20" width="340" height="440" rx="8"/>
+  <text class="panel-title" x="190" y="44" text-anchor="middle">Network Account</text>
+  <rect class="panel" x="380" y="20" width="280" height="440" rx="8"/>
+  <text class="panel-title" x="520" y="44" text-anchor="middle">Dev Account</text>
+  <rect class="panel" x="680" y="20" width="280" height="440" rx="8"/>
+  <text class="panel-title" x="820" y="44" text-anchor="middle">Sandbox Account</text>
+
+  <path class="link" d="M 190 98 L 190 108 L 78 108 L 78 124"/>
+  <path class="link" d="M 190 98 L 190 108 L 292 108 L 292 124"/>
+  <path class="link" d="M 190 98 L 194 124"/>
+
+  <path class="link cross" d="M 432 137 L 402 137 L 402 68 L 292 68" marker-end="url(#arrow-solid)"/>
+  <path class="link cross" d="M 432 277 L 392 277 L 392 82 L 292 82" marker-end="url(#arrow-solid)"/>
+  <path class="link cross" d="M 732 137 L 702 137 L 702 68 L 292 68" marker-end="url(#arrow-solid)"/>
+  <path class="link cross" d="M 732 277 L 692 277 L 692 82 L 292 82" marker-end="url(#arrow-solid)"/>
+
+  <path class="link dashed" d="M 200 304 L 362 304 L 362 137 L 432 137" marker-end="url(#arrow-dashed)"/>
+  <path class="link dashed" d="M 380 304 L 384 304 L 384 277 L 432 277" marker-end="url(#arrow-dashed)"/>
+  <path class="link dashed" d="M 200 354 L 662 354 L 662 137 L 732 137" marker-end="url(#arrow-dashed)"/>
+  <path class="link dashed" d="M 380 354 L 672 354 L 672 277 L 732 277" marker-end="url(#arrow-dashed)"/>
+
+  <rect class="node accent" x="90" y="58" width="200" height="40" rx="6"/>
+  <text class="node-label" x="190" y="82" text-anchor="middle">platform.demo.local PHZ</text>
+
+  <rect class="node" x="32" y="124" width="92" height="34" rx="6"/>
+  <text class="node-label small" x="78" y="144" text-anchor="middle">apse2 primary</text>
+
+  <rect class="node" x="246" y="124" width="92" height="34" rx="6"/>
+  <text class="node-label small" x="292" y="144" text-anchor="middle">apse2 secondary</text>
+
+  <rect class="node" x="139" y="188" width="110" height="34" rx="6"/>
+  <text class="node-label small" x="194" y="208" text-anchor="middle">ap-southeast-6</text>
+
+  <text class="section-label" x="32" y="248">Authorizations (Phase 2a)</text>
+
+  <rect class="node auth" x="32" y="290" width="168" height="28" rx="6"/>
+  <text class="node-label small" x="116" y="308" text-anchor="middle">Auth dev apse2</text>
+
+  <rect class="node auth" x="212" y="290" width="168" height="28" rx="6"/>
+  <text class="node-label small" x="296" y="308" text-anchor="middle">Auth dev apse6</text>
+
+  <rect class="node auth" x="32" y="340" width="168" height="28" rx="6"/>
+  <text class="node-label small" x="116" y="358" text-anchor="middle">Auth sandbox apse2</text>
+
+  <rect class="node auth" x="212" y="340" width="168" height="28" rx="6"/>
+  <text class="node-label small" x="296" y="358" text-anchor="middle">Auth sandbox apse6</text>
+
+  <rect class="node" x="432" y="120" width="176" height="34" rx="6"/>
+  <text class="node-label" x="520" y="141" text-anchor="middle">VPC ap-southeast-2</text>
+
+  <rect class="node" x="432" y="260" width="176" height="34" rx="6"/>
+  <text class="node-label" x="520" y="281" text-anchor="middle">VPC ap-southeast-6</text>
+
+  <rect class="node" x="732" y="120" width="176" height="34" rx="6"/>
+  <text class="node-label" x="820" y="141" text-anchor="middle">VPC ap-southeast-2</text>
+
+  <rect class="node" x="732" y="260" width="176" height="34" rx="6"/>
+  <text class="node-label" x="820" y="281" text-anchor="middle">VPC ap-southeast-6</text>
+
+  <text class="edge-label" x="118" y="118" text-anchor="middle">same-account</text>
+
+  <g class="legend-item" transform="translate(190, 458)">
+    <line class="legend-line" x1="-24" y1="-4" x2="24" y2="-4"/>
+    <text class="legend-text" x="0" y="12" text-anchor="middle">same-account association</text>
+  </g>
+  <g class="legend-item" transform="translate(520, 458)">
+    <line class="legend-line cross" x1="-24" y1="-4" x2="24" y2="-4" marker-end="url(#arrow-solid)"/>
+    <text class="legend-text" x="0" y="12" text-anchor="middle">cross-account associate (Phase 3)</text>
+  </g>
+  <g class="legend-item" transform="translate(820, 458)">
+    <line class="legend-line dashed" x1="-24" y1="-4" x2="24" y2="-4" marker-end="url(#arrow-dashed)"/>
+    <text class="legend-text" x="0" y="12" text-anchor="middle">authorization (Phase 2a)</text>
+  </g>
+
+</svg>

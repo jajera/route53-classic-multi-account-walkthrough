@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="120" viewBox="0 0 780 120" fill="none" role="img" aria-label="DNS resolution path from Test_EC2 through VPC resolver and Route 53 to Platform_Zone A records">
+  <defs>
+    <marker id="arrow-solid" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon class="arrow-head" points="0 0, 8 4, 0 8"/></marker>
+    <marker id="arrow-dashed" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon class="arrow-head-dashed" points="0 0, 8 4, 0 8"/></marker>
+    <style>
+  
+  .diagram-frame { fill: #1e2836; stroke: #3d4f63; stroke-width: 1.5; }
+  @media (prefers-color-scheme: light) {
+    .diagram-frame { fill: #f8fafc; stroke: #c5cdd6; }
+  }
+
+  .panel { fill: #243040; stroke: #3d4f63; stroke-width: 1; }
+  .panel.network { stroke: #7B68EE; stroke-opacity: 0.45; }
+  .panel-title { fill: #f4f1f8; font-family: sans-serif; font-size: 13px; font-weight: 600; }
+  .node { fill: #243040; stroke: #3d4f63; stroke-width: 1.5; }
+  .node.accent, .node.ok { stroke: #7B68EE; }
+  .node.auth { stroke: #64748b; stroke-dasharray: 4 3; }
+  .node.fail { stroke: #e57373; }
+  .node-label { fill: #f4f1f8; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; }
+  .node-label.small { font-size: 10px; }
+  .detail, .edge-label { fill: #94a3b8; font-family: sans-serif; font-size: 10px; }
+  .edge-label { font-size: 9px; }
+  .link { stroke: #64748b; stroke-width: 1.5; fill: none; }
+  .link.cross { stroke: #7B68EE; }
+  .link.dashed { stroke: #94a3b8; stroke-dasharray: 5 4; }
+  .arrow-head { fill: #7B68EE; }
+  .arrow-head-dashed { fill: #94a3b8; }
+  .diamond { fill: #243040; stroke: #7B68EE; stroke-width: 1.5; }
+  .dir, .file { fill: #f4f1f8; font-family: ui-monospace, monospace; font-size: 12px; }
+  .file { fill: #b8a9e8; }
+  .comment { fill: #94a3b8; font-family: sans-serif; font-size: 11px; }
+  .tree { stroke: #64748b; stroke-width: 1.5; fill: none; }
+  @media (prefers-color-scheme: light) {
+    .panel { fill: #eef1f5; stroke: #c5cdd6; }
+    .panel.network { stroke: #6d5f95; }
+    .panel-title, .node-label, .dir { fill: #1f2937; }
+    .node { fill: #eef1f5; stroke: #c5cdd6; }
+    .node.accent, .node.ok { stroke: #6d5f95; }
+    .node.auth { stroke: #9ca3af; }
+    .detail, .edge-label, .comment { fill: #4b5563; }
+    .link { stroke: #9ca3af; }
+    .link.cross { stroke: #6d5f95; }
+    .link.dashed { stroke: #6b7280; }
+    .arrow-head { fill: #6d5f95; }
+    .arrow-head-dashed { fill: #6b7280; }
+    .diamond { fill: #eef1f5; stroke: #6d5f95; }
+    .file { fill: #5b4d8a; }
+    .tree { stroke: #9ca3af; }
+  }
+</style>
+  </defs>
+  <rect class="diagram-frame" x="1" y="1" width="778" height="118" rx="10"/>
+  
+  <rect class="node" x="20" y="36" width="118" height="48" rx="6"/>
+  <text class="node-label" x="79" y="58" text-anchor="middle">Test_EC2</text>
+  <text class="detail" x="79" y="72" text-anchor="middle">any VPC</text>
+  <rect class="node" x="168" y="36" width="132" height="48" rx="6"/>
+  <text class="node-label" x="234" y="58" text-anchor="middle">VPC DNS Resolver</text>
+  <text class="detail" x="234" y="72" text-anchor="middle">AmazonProvidedDNS</text>
+  <rect class="node" x="330" y="36" width="118" height="48" rx="6"/>
+  <text class="node-label" x="389" y="64" text-anchor="middle">Route 53 Resolver</text>
+  <rect class="node accent" x="478" y="36" width="132" height="48" rx="6"/>
+  <text class="node-label" x="544" y="58" text-anchor="middle">Platform_Zone</text>
+  <text class="detail" x="544" y="72" text-anchor="middle">platform.demo.local</text>
+  <rect class="node" x="640" y="36" width="120" height="48" rx="6"/>
+  <text class="node-label" x="700" y="58" text-anchor="middle">A records</text>
+  <text class="detail" x="700" y="72" text-anchor="middle">api / db → 10.0.x.x</text>
+  <path class="link cross" d="M 138 60 L 168 60" marker-end="url(#arrow-solid)"/>
+  <path class="link cross" d="M 300 60 L 330 60" marker-end="url(#arrow-solid)"/>
+  <path class="link cross" d="M 448 60 L 478 60" marker-end="url(#arrow-solid)"/>
+  <path class="link cross" d="M 610 60 L 640 60" marker-end="url(#arrow-solid)"/>
+  <text class="edge-label" x="153" y="52" text-anchor="middle">dig query</text>
+</svg>

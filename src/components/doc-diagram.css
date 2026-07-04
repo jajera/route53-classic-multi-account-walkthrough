@@ -1,0 +1,143 @@
+.doc-diagram {
+  margin: 1rem 0;
+}
+
+.doc-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.doc-diagram .frame {
+  fill: var(--sl-color-gray-6);
+  stroke: var(--sl-color-gray-5);
+  stroke-width: 1.5;
+}
+
+.doc-diagram .panel {
+  fill: var(--sl-color-gray-7, var(--sl-color-bg));
+  stroke: var(--sl-color-gray-5);
+  stroke-width: 1;
+}
+
+.doc-diagram .panel.network {
+  stroke: var(--sl-color-accent);
+  stroke-opacity: 0.45;
+}
+
+.doc-diagram .panel-title {
+  fill: var(--sl-color-text);
+  font-family: var(--sl-font-system);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.doc-diagram .node {
+  fill: var(--sl-color-gray-6);
+  stroke: var(--sl-color-gray-5);
+  stroke-width: 1.5;
+}
+
+.doc-diagram .node.accent,
+.doc-diagram .node.ok {
+  stroke: var(--sl-color-accent);
+}
+
+.doc-diagram .node.auth {
+  stroke: var(--sl-color-gray-4);
+  stroke-dasharray: 4 3;
+}
+
+.doc-diagram .node.fail {
+  stroke: #e57373;
+}
+
+.doc-diagram .node-label {
+  fill: var(--sl-color-text);
+  font-family: var(--sl-font-system-mono, var(--sl-font-system));
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.doc-diagram .node-label.small {
+  font-size: 10px;
+}
+
+.doc-diagram .detail,
+.doc-diagram .edge-label {
+  fill: var(--sl-color-gray-3);
+  font-family: var(--sl-font-system);
+  font-size: 10px;
+}
+
+.doc-diagram .edge-label {
+  font-size: 9px;
+}
+
+.doc-diagram .link {
+  stroke: var(--sl-color-gray-4);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.doc-diagram .link.cross {
+  stroke: var(--sl-color-accent);
+}
+
+.doc-diagram .link.dashed {
+  stroke: var(--sl-color-gray-3);
+  stroke-dasharray: 5 4;
+}
+
+.doc-diagram .arrow-head {
+  fill: var(--sl-color-accent);
+}
+
+.doc-diagram .arrow-head-dashed {
+  fill: var(--sl-color-gray-3);
+}
+
+.doc-diagram .diamond {
+  fill: var(--sl-color-gray-6);
+  stroke: var(--sl-color-accent);
+  stroke-width: 1.5;
+}
+
+.doc-diagram .dir,
+.doc-diagram .file {
+  fill: var(--sl-color-text);
+  font-family: var(--sl-font-system-mono, ui-monospace, monospace);
+  font-size: 12px;
+}
+
+.doc-diagram .file {
+  fill: var(--sl-color-accent);
+}
+
+.doc-diagram .comment {
+  fill: var(--sl-color-gray-3);
+  font-family: var(--sl-font-system);
+  font-size: 11px;
+}
+
+.doc-diagram .tree {
+  stroke: var(--sl-color-gray-4);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.topology-diagram svg {
+  max-width: 980px;
+}
+
+.module-map-diagram svg {
+  max-width: 560px;
+}
+
+.decision-diagram svg {
+  max-width: 580px;
+}
+
+.dns-diagram svg {
+  max-width: 780px;
+}

@@ -1,0 +1,42 @@
+---
+/** Decision flow — when VPC association authorization is required */
+import {
+  decisionWidth,
+  decisionHeight,
+  associationDecisionInner,
+} from "../../scripts/association-decision-content.mjs";
+---
+
+<figure class="doc-diagram decision-diagram">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox={`0 0 ${decisionWidth} ${decisionHeight}`}
+    fill="none"
+    role="img"
+    aria-label="Decision flow: same-account associations skip authorization; cross-account requires existing VPCAssociationAuthorization"
+  >
+    <defs>
+      <marker
+        id="decision-arrow"
+        markerWidth="8"
+        markerHeight="8"
+        refX="7"
+        refY="4"
+        orient="auto"
+      >
+        <polygon class="arrow-head" points="0 0, 8 4, 0 8"></polygon>
+      </marker>
+    </defs>
+
+    <rect class="frame" x="1" y="1" width="578" height="378" rx="10"></rect>
+    <g set:html={associationDecisionInner} />
+  </svg>
+</figure>
+
+<style is:global>
+  @import "./doc-diagram.css";
+
+  .decision-diagram svg {
+    max-width: 580px;
+  }
+</style>

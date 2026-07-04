@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="310" viewBox="0 0 560 310" fill="none" role="img" aria-label="Terraform directory layout: modules and account stacks in the source demo repository">
+  <defs>
+    <marker id="arrow-solid" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon class="arrow-head" points="0 0, 8 4, 0 8"/></marker>
+    <marker id="arrow-dashed" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon class="arrow-head-dashed" points="0 0, 8 4, 0 8"/></marker>
+    <style>
+  
+  .diagram-frame { fill: #1e2836; stroke: #3d4f63; stroke-width: 1.5; }
+  @media (prefers-color-scheme: light) {
+    .diagram-frame { fill: #f8fafc; stroke: #c5cdd6; }
+  }
+
+  .panel { fill: #243040; stroke: #3d4f63; stroke-width: 1; }
+  .panel.network { stroke: #7B68EE; stroke-opacity: 0.45; }
+  .panel-title { fill: #f4f1f8; font-family: sans-serif; font-size: 13px; font-weight: 600; }
+  .node { fill: #243040; stroke: #3d4f63; stroke-width: 1.5; }
+  .node.accent, .node.ok { stroke: #7B68EE; }
+  .node.auth { stroke: #64748b; stroke-dasharray: 4 3; }
+  .node.fail { stroke: #e57373; }
+  .node-label { fill: #f4f1f8; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; }
+  .node-label.small { font-size: 10px; }
+  .detail, .edge-label { fill: #94a3b8; font-family: sans-serif; font-size: 10px; }
+  .edge-label { font-size: 9px; }
+  .link { stroke: #64748b; stroke-width: 1.5; fill: none; }
+  .link.cross { stroke: #7B68EE; }
+  .link.dashed { stroke: #94a3b8; stroke-dasharray: 5 4; }
+  .arrow-head { fill: #7B68EE; }
+  .arrow-head-dashed { fill: #94a3b8; }
+  .diamond { fill: #243040; stroke: #7B68EE; stroke-width: 1.5; }
+  .dir, .file { fill: #f4f1f8; font-family: ui-monospace, monospace; font-size: 12px; }
+  .file { fill: #b8a9e8; }
+  .comment { fill: #94a3b8; font-family: sans-serif; font-size: 11px; }
+  .tree { stroke: #64748b; stroke-width: 1.5; fill: none; }
+  @media (prefers-color-scheme: light) {
+    .panel { fill: #eef1f5; stroke: #c5cdd6; }
+    .panel.network { stroke: #6d5f95; }
+    .panel-title, .node-label, .dir { fill: #1f2937; }
+    .node { fill: #eef1f5; stroke: #c5cdd6; }
+    .node.accent, .node.ok { stroke: #6d5f95; }
+    .node.auth { stroke: #9ca3af; }
+    .detail, .edge-label, .comment { fill: #4b5563; }
+    .link { stroke: #9ca3af; }
+    .link.cross { stroke: #6d5f95; }
+    .link.dashed { stroke: #6b7280; }
+    .arrow-head { fill: #6d5f95; }
+    .arrow-head-dashed { fill: #6b7280; }
+    .diamond { fill: #eef1f5; stroke: #6d5f95; }
+    .file { fill: #5b4d8a; }
+    .tree { stroke: #9ca3af; }
+  }
+</style>
+  </defs>
+  <rect class="diagram-frame" x="1" y="1" width="558" height="308" rx="10"/>
+  
+  <text class="dir" x="24" y="36">terraform/</text>
+  <path class="tree" d="M 24 44 L 24 58 L 48 58"/>
+  <text class="dir" x="48" y="62">modules/</text>
+  <path class="tree" d="M 48 70 L 48 84 L 72 84"/>
+  <text class="file" x="72" y="88">vpc/</text>
+  <text class="comment" x="130" y="88">DNS-enabled VPC, subnets, SSM, NAT</text>
+  <path class="tree" d="M 48 98 L 48 112 L 72 112"/>
+  <text class="file" x="72" y="116">private-hosted-zone/</text>
+  <text class="comment" x="220" y="116">PHZ, records, primary association</text>
+  <path class="tree" d="M 48 126 L 48 140 L 72 140"/>
+  <text class="file" x="72" y="144">cross-account-auth/</text>
+  <text class="comment" x="220" y="144">VPC association authorizations</text>
+  <path class="tree" d="M 48 154 L 48 168 L 72 168"/>
+  <text class="file" x="72" y="172">workload-stack/</text>
+  <text class="comment" x="200" y="172">VPC + association + test-ec2</text>
+  <path class="tree" d="M 48 182 L 48 196 L 72 196"/>
+  <text class="file" x="72" y="200">test-ec2/</text>
+  <text class="comment" x="150" y="200">Minimal EC2 with SSM profile</text>
+  <path class="tree" d="M 24 214 L 24 228 L 48 228"/>
+  <text class="dir" x="48" y="232">accounts/</text>
+  <path class="tree" d="M 48 240 L 48 254 L 72 254"/>
+  <text class="file" x="72" y="258">network/</text>
+  <text class="comment" x="150" y="258">PHZ, auth, secondary assoc, test-ec2</text>
+  <path class="tree" d="M 48 268 L 48 282 L 72 282"/>
+  <text class="file" x="72" y="286">network-apse6/</text>
+  <text class="comment" x="190" y="286">Same-account cross-region</text>
+  <path class="tree" d="M 48 296 L 48 296 L 72 296"/>
+  <text class="file" x="72" y="300">dev-*, sandbox-*</text>
+  <text class="comment" x="210" y="300">Cross-account stacks</text>
+</svg>

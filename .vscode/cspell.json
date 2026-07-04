@@ -1,0 +1,41 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "apse2",
+    "apse6",
+    "astro",
+    "astrojs",
+    "AssociateVPCWithHostedZone",
+    "bind-utils",
+    "CreateVPCAssociationAuthorization",
+    "dig",
+    "DisassociateVPCFromHostedZone",
+    "ec2messages",
+    "HostedZoneSummaries",
+    "jajera",
+    "markdownlint",
+    "mdx",
+    "pagefind",
+    "PHZ",
+    "popover",
+    "preflight",
+    "r53demo",
+    "route53",
+    "send-command",
+    "ssmmessages",
+    "starlight",
+    "TargetNotConnected",
+    "terraform",
+    "tfvars",
+    "walkthrough"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    ".astro",
+    "package-lock.json",
+    "public/diagram-icons",
+    "**/*.svg"
+  ]
+}

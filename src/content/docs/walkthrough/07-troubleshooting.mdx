@@ -1,0 +1,42 @@
+---
+title: Troubleshooting
+description: Common failure modes during phased deploy, verification, and teardown
+---
+
+| Symptom                                         | Likely cause                               | Resolution                                                                                             |
+| ----------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `invalid AWS Region: ap-southeast-6`            | Old AWS provider (v5.x lock file)          | `terraform -chdir=terraform/accounts/<stack> init -upgrade`; requires provider **6.53.0**              |
+| `AccessDenied` on `AssociateVPCWithHostedZone`  | Stale VPC ID in `network/terraform.tfvars` | Compare workload `output vpc_id` vs `network/terraform.tfvars`; update and re-apply Phase 2a           |
+| `AccessDenied` cross-region                     | Wrong `vpc_region` on authorization        | Confirm Phase 2a authorizes apse6 VPCs with `ap-southeast-6`                                           |
+| `dig` returns no answer                         | Phase 3 incomplete or propagation delay    | Confirm `enable_zone_association=true`; wait 1–2 minutes; check Step A                                 |
+| Wrong or missing `zone_id`                      | Mismatch between stacks                    | Match `zone_id` to `terraform -chdir=terraform/accounts/network output zone_id`                        |
+| Empty VPC console                               | Wrong region in console picker             | Switch to `ap-southeast-2` or `ap-southeast-6`                                                         |
+| Plan wants to **replace** association           | Re-apply without `zone_id`                 | Use `-var-file=terraform.tfvars` with `zone_id` and phase flags                                        |
+| Plan shows **destroy** on live stack            | Missing `terraform.tfvars` or wrong flags  | Plan must show **0 to destroy** before apply                                                           |
+| Plan wants to **create VPC** but VPC exists     | Lost or empty state                        | **Do not apply.** Import resources or restore `terraform.tfstate.backup`                               |
+| `InvalidServiceName` for `ec2messages` in apse6 | Endpoint not launched in region yet        | Omit from `ssm_vpc_endpoint_services` (default on `*-apse6`)                                           |
+| SSM `TargetNotConnected` on `*-apse6`           | Missing `ec2messages` or agent offline     | Try `send-command`; enable NAT; or use Step A only — see [Verification](/walkthrough/06-verification/) |
+| Step A missing zone on network-apse6            | Association drift (state vs AWS)           | Re-apply owning stack with full `-var-file`                                                            |
+| `dig` not found                                 | `bind-utils` not installed                 | `sudo dnf install -y bind-utils` on AL2023                                                             |
+
+## Recovery hints by phase
+
+### Phase 2a failures
+
+- Confirm all four workload `vpc_id` values in `network/terraform.tfvars` match Phase 1 outputs
+- Read [Security Boundaries](/architecture/04-security-boundaries/) for authorization prerequisites
+
+### Phase 3 failures
+
+- Run [Phase 3 pre-flight](/walkthrough/04-preflight/#phase-3-pre-flight--vpc-id-match) before retrying
+- Confirm authorizations exist: `aws route53 list-vpc-association-authorizations --id <zone_id>`
+
+### Verification failures
+
+- Step A proves association even when SSM is unavailable
+- Allow propagation time after new associations
+- For apse6 without NAT, demonstrate cross-account resolution from apse2 tests (4, 6)
+
+## Next step
+
+[Teardown](/walkthrough/08-teardown/) when finished with the demo.
