@@ -1,0 +1,176 @@
+---
+title: Prerequisites
+description: AWS accounts, CLI profiles, Terraform versions, and regional constraints before deployment
+---
+
+import Callout from "@/components/Callout.astro";
+import Tooltip from "@/components/Tooltip.astro";
+
+## Before you start
+
+1. Clone the [source demo repository](https://github.com/jajera/route53-multi-account-dns-demo)
+2. Work from the **demo repository root** for all commands in this walkthrough
+
+## AWS accounts and regions
+
+1. **Three AWS accounts** — `network`, `dev`, and `sandbox`
+2. **Both regions enabled** on each account: `ap-southeast-2` and `ap-southeast-6`
+
+<Callout type="note" title="Why these two regions?">
+  This walkthrough uses **ap-southeast-2** and **ap-southeast-6** as concrete
+  examples — one established region plus a second for{" "}
+  <Tooltip term="cross-region-sharing" label="cross-region association" />. Any
+  two regions work if you rename stacks, update CIDRs, and set `vpc_region`
+  correctly in authorizations. Before you commit, check that Terraform and the
+  AWS provider support your chosen regions and that services you rely on (VPC,
+  Route 53, SSM endpoints, and so on) are available there — see [Regional
+  service
+  gaps](/walkthrough/03-prerequisites/#regional-service-gaps-ap-southeast-6)
+  below for one example.
+</Callout>
+
+Configure one profile per account:
+
+```ini
+[profile r53demo-network]
+sso_session = my-sso
+sso_account_id = 111111111111
+sso_role_name = AdministratorAccess
+region = ap-southeast-2
+
+[profile r53demo-dev]
+sso_session = my-sso
+sso_account_id = 222222222222
+sso_role_name = AdministratorAccess
+region = ap-southeast-2
+
+[profile r53demo-sandbox]
+sso_session = my-sso
+sso_account_id = 333333333333
+sso_role_name = AdministratorAccess
+region = ap-southeast-2
+```
+
+Verify before each phase:
+
+```bash
+export AWS_PROFILE=r53demo-network   # or dev / sandbox
+aws sts get-caller-identity
+```
+
+## Terraform and provider versions
+
+| Requirement  | Value                                                                |
+| ------------ | -------------------------------------------------------------------- |
+| Terraform    | >= 1.5.0                                                             |
+| AWS provider | **6.53.0** per stack (`versions.tf`) — required for `ap-southeast-6` |
+
+After cloning or pulling demo updates:
+
+```bash
+terraform -chdir=terraform/accounts/<stack> init -upgrade
+```
+
+## Phase-specific variables
+
+| Variable                                                                               | Where                                | When needed                                       |
+| -------------------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------- |
+| `dev_apse2_vpc_id`, `dev_apse6_vpc_id`, `sandbox_apse2_vpc_id`, `sandbox_apse6_vpc_id` | `network`                            | Phase 2a — from workload Phase 1 outputs          |
+| `zone_id`                                                                              | `network-apse6`, all workload stacks | Phase 2b / Phase 3 — from network Phase 2a output |
+
+Copy `terraform.tfvars.example` → `terraform.tfvars` per stack after Phase 1 outputs are captured.
+
+Default provider tags: `Project=r53demo`, `Account=<network|dev|sandbox>`, `ManagedBy=terraform`.
+
+## AWS Console region picker
+
+Route 53 hosted zones appear **global** in the console. VPC and EC2 are **regional**. Switching services may reset the region picker — if lists look empty, switch back to `ap-southeast-2` or `ap-southeast-6` before assuming deploy failed.
+
+## SSM Session Manager prerequisites
+
+<Tooltip term="test-ec2" label="Test_EC2" /> instances sit in **private
+subnets** with **no public IP**. Session Manager needs either:
+
+| Path                                                                 | Requirements                                                                   | Used in demo                      |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------- |
+| <Tooltip term="ssm-vpc-endpoints" label="VPC interface endpoints" /> | All three SSM services in the **same region** as the instance                  | `ap-southeast-2` stacks (default) |
+| Internet egress                                                      | <Tooltip term="nat-gateway" label="NAT gateway" /> (`enable_nat_gateway=true`) | Optional on `*-apse6` stacks      |
+
+Required SSM endpoint services when using VPC endpoints:
+
+| Service suffix | Required |
+| -------------- | -------- |
+| `ssm`          | Yes      |
+| `ssmmessages`  | Yes      |
+| `ec2messages`  | Yes      |
+
+## ap-southeast-6 SSM endpoints
+
+In **ap-southeast-6**, AWS has launched **`ssm`** and **`ssmmessages`** interface endpoints, but **not `ec2messages`** yet. `*-apse6` stacks default to the two available services so `terraform apply` succeeds.
+
+| Variable                    | Default (`*-apse2`) | Default (`*-apse6`)       |
+| --------------------------- | ------------------- | ------------------------- |
+| `enable_ssm_vpc_endpoints`  | `true`              | `true`                    |
+| `ssm_vpc_endpoint_services` | all three           | `ssm`, `ssmmessages` only |
+
+Confirm after apply:
+
+```bash
+terraform -chdir=terraform/accounts/dev-apse6 output ssm_vpc_endpoints_enabled
+terraform -chdir=terraform/accounts/dev-apse6 output ssm_vpc_endpoint_services
+# Expected today: true, ["ssm", "ssmmessages"]
+```
+
+Check whether `ec2messages` exists before adding it:
+
+```bash
+aws ec2 describe-vpc-endpoint-services \
+  --service-names com.amazonaws.ap-southeast-6.ec2messages \
+  --region ap-southeast-6 \
+  --query 'ServiceDetails[0].ServiceName' \
+  --output text
+```
+
+## Optional NAT for ap-southeast-6 SSM
+
+Until **`ec2messages`** exists as a VPC interface endpoint, interactive Session Manager from private subnets may need **internet egress**. Set **`enable_nat_gateway = true`** on `network-apse6`, `dev-apse6`, and `sandbox-apse6` to enable a <Tooltip term="nat-gateway" label="NAT gateway" />.
+
+<Callout type="caution" title="Cost">
+  Approximate NAT cost: ~**USD 0.06/hour** per gateway (~USD 1.40/day per
+  stack). Disable NAT or destroy stacks during teardown to stop charges.
+</Callout>
+
+<Callout type="warning" title="Never partial re-apply">
+  Never re-apply with only `-var="enable_nat_gateway=true"` — that omits
+  `zone_id` and Terraform may destroy the Route 53 VPC association. Always use
+  `-var-file=terraform.tfvars` with full phase flags.
+</Callout>
+
+## Limitations and lessons learned
+
+These are operational realities of the classic pattern in this demo — not bugs in Route 53 itself.
+
+### Regional service gaps (ap-southeast-6)
+
+<Tooltip term="regional-service-gap" label="Regional service gaps" /> affect
+SSM, not DNS: <Tooltip term="vpc-association" label="VPC_Association" /> and
+Route 53 resolution work regardless of SSM. SSM agents on `*-apse6` instances
+may register with only `ssm` + `ssmmessages` endpoints. If `start-session`
+fails, use `send-command`, enable NAT, or verify with Step A in
+[Verification](/walkthrough/06-verification/).
+
+### Two-party operations
+
+Network_Account creates authorizations; Dev_Account and Sandbox_Account create associations — separate profiles, separate applies, fixed order.
+
+### Cross-stack coupling
+
+Manual handoff of four workload `vpc_id` values into `network`, then `zone_id` into five downstream stacks. Stale IDs are the most common demo failure mode.
+
+### Teardown ordering
+
+Route 53 blocks PHZ deletion while cross-account associations exist. Set feature flags to `false` on workload stacks before destroying `network`.
+
+## Next step
+
+[Pre-flight checks](/walkthrough/04-preflight/) before your first apply.

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="220" viewBox="0 0 880 220" fill="none" role="img" aria-label="Phased deployment: Phase 1 to Phase 2a, then Phase 2b and Phase 3 in parallel">
+  <defs>
+    <marker id="phase-arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <polygon class="phase-arrow-head" points="0 0, 8 4, 0 8"/>
+    </marker>
+    <style>
+      .diagram-frame { fill: #1e2836; stroke: #3d4f63; stroke-width: 1.5; }
+      .phase-box { fill: #243040; stroke: #3d4f63; stroke-width: 1.5; }
+      .phase-title { fill: #f4f1f8; font-family: sans-serif; font-size: 14px; font-weight: 600; }
+      .phase-desc { fill: #94a3b8; font-family: sans-serif; font-size: 12px; }
+      .phase-arrow { stroke: #7B68EE; stroke-width: 1.5; fill: none; }
+      .phase-arrow-head { fill: #7B68EE; }
+      @media (prefers-color-scheme: light) {
+        .diagram-frame { fill: #f8fafc; stroke: #c5cdd6; }
+        .phase-box { fill: #eef1f5; stroke: #c5cdd6; }
+        .phase-title { fill: #1f2937; }
+        .phase-desc { fill: #4b5563; }
+        .phase-arrow { stroke: #6d5f95; }
+        .phase-arrow-head { fill: #6d5f95; }
+      }
+    </style>
+  </defs>
+  <rect class="diagram-frame" x="1" y="1" width="878" height="218" rx="10"/>
+  <path class="phase-arrow" d="M 224 117 L 244 117" marker-end="url(#phase-arrowhead)"/>
+<path class="phase-arrow" d="M 444 117 L 540 117 L 540 59 L 660 59" marker-end="url(#phase-arrowhead)"/>
+<path class="phase-arrow" d="M 540 117 L 540 165 L 660 165" marker-end="url(#phase-arrowhead)"/>
+  <rect class="phase-box" x="24" y="82" width="200" height="70" rx="8"/>
+  <text class="phase-title" x="124" y="112" text-anchor="middle">Phase 1</text>
+  <text class="phase-desc" x="124" y="132" text-anchor="middle">All 6 stacks: VPC only</text>
+<rect class="phase-box" x="244" y="82" width="200" height="70" rx="8"/>
+  <text class="phase-title" x="344" y="112" text-anchor="middle">Phase 2a</text>
+  <text class="phase-desc" x="344" y="132" text-anchor="middle">network: PHZ + auth + EC2</text>
+<rect class="phase-box" x="660" y="24" width="200" height="70" rx="8"/>
+  <text class="phase-title" x="760" y="54" text-anchor="middle">Phase 2b</text>
+  <text class="phase-desc" x="760" y="74" text-anchor="middle">network-apse6: association</text>
+<rect class="phase-box" x="660" y="130" width="200" height="70" rx="8"/>
+  <text class="phase-title" x="760" y="160" text-anchor="middle">Phase 3</text>
+  <text class="phase-desc" x="760" y="180" text-anchor="middle">4 workload stacks</text>
+</svg>

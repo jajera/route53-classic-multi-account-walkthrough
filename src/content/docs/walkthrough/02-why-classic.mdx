@@ -1,0 +1,44 @@
+---
+title: Why Classic
+description: Why the demo uses classic VPC association authorization and when to choose alternatives
+---
+
+import Tooltip from "@/components/Tooltip.astro";
+
+## What "classic" means
+
+**Classic** means the native <Tooltip term="route53" label="Route 53" /> <Tooltip term="vpc-association-authorization" label="VPC association authorization" /> APIs:
+
+1. The zone owner creates a <Tooltip term="vpc-association-authorization" label="VPC_Association_Authorization" /> for a specific VPC ID and region.
+2. The VPC owner creates a <Tooltip term="vpc-association" label="VPC_Association" /> to link that VPC to the authorized private hosted zone.
+
+The contract is explicit, API-visible, and does not depend on <Tooltip term="route53-profiles" label="Route 53 Profiles" /> or <Tooltip term="aws-ram" label="AWS RAM" />.
+
+## Why this demo uses classic
+
+- Teaches the underlying Route 53 sharing contract as separate, auditable steps
+- One <Tooltip term="platform-zone" label="Platform_Zone" /> in the <Tooltip term="network-account" label="Network_Account" /> serves all regions
+- DNS records stay in one authoritative place — workload accounts resolve but do not author records
+- Simple to understand and operate — no Profiles, RAM, or extra shared-services layer; you pay for Route 53 and VPCs you already use
+
+## When classic may not be best for production
+
+| Consideration         | Classic behavior                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| Lifecycle management  | Manual two-party operations; Profiles/RAM centralise association lifecycle                        |
+| Authorization binding | Authorization_Specificity — exact `vpc_id` + `vpc_region`; VPC recreate requires re-authorization |
+| Operations model      | Network authorizes; workload associates — separate accounts, separate applies                     |
+| Cross-stack coupling  | Manual Cross_Stack_Handoff of `vpc_id` and `zone_id` via `terraform.tfvars`                       |
+| Zone ownership        | Single Platform_Zone owner concentrates DNS control-plane responsibility                          |
+
+**Stance:** classic fits this learning demo — not every greenfield design. Considerations like <Tooltip term="authorization-specificity" label="Authorization_Specificity" /> and manual <Tooltip term="cross-stack-handoff" label="Cross_Stack_Handoff" /> matter in production. See [Limitations](/walkthrough/03-prerequisites/#limitations-and-lessons-learned) and [Intentionally excluded](/walkthrough/01-overview/#intentionally-excluded).
+
+## Alternatives not used here
+
+- **Route 53 Profiles** — centralised association lifecycle; different setup and ownership model
+- **AWS RAM** — resource sharing for hosted zones; not part of this walkthrough
+
+## Next steps
+
+- [Prerequisites](/walkthrough/03-prerequisites/) — tools, accounts, and regional caveats
+- [System Overview](/architecture/01-system-overview/) — topology and module map in the source demo

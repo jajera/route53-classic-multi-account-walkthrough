@@ -1,0 +1,143 @@
+---
+title: Verification
+description: Seven DNS tests from Test_EC2 instances — dig, SSM, and ap-southeast-6 fallback paths
+---
+
+import Callout from "@/components/Callout.astro";
+import Tooltip from "@/components/Tooltip.astro";
+import VerificationDiagram from "@/components/VerificationDiagram.astro";
+
+## Objective
+
+Prove that every associated VPC resolves `api.platform.demo.local` to **`10.0.1.10`** regardless of account or region.
+
+<VerificationDiagram />
+
+Use `terraform output test_ec2_instance_id` (or `test_ec2_instance_id_primary` / `_secondary` on `network`) from the source demo repo — <Tooltip term="test-ec2" label="Test_EC2" /> instance IDs change per deployment.
+
+## ap-southeast-2 vs ap-southeast-6
+
+| Region stacks                       | SSM                                                     | Verification approach                          |
+| ----------------------------------- | ------------------------------------------------------- | ---------------------------------------------- |
+| `ap-southeast-2` (Tests 1, 2, 4, 6) | All three endpoints — Session Manager works without NAT | SSM + `dig`                                    |
+| `ap-southeast-6` (Tests 3, 5, 7)    | Partial endpoints by default                            | Step A always works; Step B when SSM is Online |
+
+### Step A — list-hosted-zones-by-vpc (always works)
+
+Proves <Tooltip term="vpc-association" label="VPC_Association" /> without shell access:
+
+```bash
+export AWS_PROFILE=r53demo-sandbox
+aws route53 list-hosted-zones-by-vpc \
+  --vpc-id <vpc-id-from-terraform-output> \
+  --vpc-region ap-southeast-6
+```
+
+**Expected:** `HostedZoneSummaries` includes `platform.demo.local` with `OwningAccount` = network account.
+
+### Step B — SSM + dig
+
+```bash
+aws ssm start-session --target <instance-id> --region ap-southeast-6
+```
+
+Inside the session:
+
+```bash
+dig +short api.platform.demo.local
+```
+
+**Expected:** `10.0.1.10`
+
+<Callout type="note" title="Propagation delay">
+  After a new association, allow **1–2 minutes** before expecting Step B `dig`
+  to answer. Confirm Step A first.
+</Callout>
+
+### Fallback — send-command
+
+If `start-session` returns `TargetNotConnected`:
+
+```bash
+aws ssm send-command \
+  --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=["dig +short api.platform.demo.local"]' \
+  --region ap-southeast-6
+
+aws ssm list-command-invocations --command-id <command-id> --details
+```
+
+Or enable NAT — see [Prerequisites](/walkthrough/03-prerequisites/#optional-nat-for-ap-southeast-6-ssm).
+
+### Testing ap-southeast-6 without NAT ($0 path)
+
+| What you prove           | How                                         | Tests      |
+| ------------------------ | ------------------------------------------- | ---------- |
+| PHZ shared to apse6 VPCs | Step A from workload account profile        | 3, 5, 7    |
+| Live `dig` from apse2    | SSM + `dig` (all three SSM endpoints exist) | 1, 2, 4, 6 |
+
+---
+
+## Seven tests
+
+| Test | Stack               | Scenario                   | Expected `dig api.platform.demo.local` |
+| ---- | ------------------- | -------------------------- | -------------------------------------- |
+| 1    | network (primary)   | PHZ owner                  | `10.0.1.10`                            |
+| 2    | network (secondary) | Same-account same-region   | `10.0.1.10`                            |
+| 3    | network-apse6       | Same-account cross-region  | `10.0.1.10`                            |
+| 4    | dev-apse2           | Cross-account same-region  | `10.0.1.10`                            |
+| 5    | dev-apse6           | Cross-account cross-region | `10.0.1.10`                            |
+| 6    | sandbox-apse2       | Cross-account same-region  | `10.0.1.10`                            |
+| 7    | sandbox-apse6       | Cross-account cross-region | `10.0.1.10`                            |
+
+### Test 1 — Network primary
+
+```bash
+export AWS_PROFILE=r53demo-network
+aws ssm start-session --target <primary-instance-id> --region ap-southeast-2
+```
+
+```bash
+dig +short api.platform.demo.local
+# Expected: 10.0.1.10
+```
+
+### Test 2 — Network secondary
+
+Same profile and region; use `test_ec2_instance_id_secondary` from `network` output.
+
+### Tests 3, 5, 7 — ap-southeast-6
+
+Run Step A first, then Step B when SSM is available. Use `--region ap-southeast-6`.
+
+### Tests 4, 6 — Cross-account apse2
+
+```bash
+export AWS_PROFILE=r53demo-dev   # or r53demo-sandbox
+aws ssm start-session --target <instance-id> --region ap-southeast-2
+dig +short api.platform.demo.local
+```
+
+### Optional db record
+
+From any connected Test_EC2:
+
+```bash
+dig +short db.platform.demo.local
+# Expected: 10.0.1.20
+```
+
+### Install dig if missing
+
+```bash
+sudo dnf install -y bind-utils
+```
+
+## Validation summary
+
+All seven tests should return **`10.0.1.10`** for `api.platform.demo.local`. Resolution consistency across same/cross-account and same/cross-region proves the classic association pattern works.
+
+## Next step
+
+[Troubleshooting](/walkthrough/07-troubleshooting/) if any test fails.

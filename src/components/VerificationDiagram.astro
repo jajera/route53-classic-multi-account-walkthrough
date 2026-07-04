@@ -1,0 +1,111 @@
+---
+/** Seven Test EC2 instances — same dig query, same PHZ answer */
+import {
+  verificationWidth,
+  verificationHeight,
+  verificationDiagramInner,
+} from "../../scripts/verification-diagram-content.mjs";
+---
+
+<figure class="doc-diagram verification-diagram">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox={`0 0 ${verificationWidth} ${verificationHeight}`}
+    fill="none"
+    role="img"
+    aria-label="Seven Test EC2 instances across three accounts and two regions all resolve api.platform.demo.local to 10.0.1.10 via the shared Platform_Zone"
+  >
+    <defs>
+      <marker
+        id="verification-arrow"
+        markerWidth="8"
+        markerHeight="8"
+        refX="7"
+        refY="4"
+        orient="auto"
+      >
+        <polygon class="arrow-head" points="0 0, 8 4, 0 8"></polygon>
+      </marker>
+    </defs>
+
+    <rect class="frame" x="1" y="1" width="978" height="518" rx="10"></rect>
+    <g set:html={verificationDiagramInner} />
+  </svg>
+</figure>
+
+<style is:global>
+  @import "./doc-diagram.css";
+
+  .verification-diagram svg {
+    max-width: 980px;
+  }
+
+  .verification-diagram .region-label {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system);
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .verification-diagram .node.ec2 {
+    stroke: var(--sl-color-accent);
+    stroke-opacity: 0.55;
+  }
+
+  .verification-diagram .record {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system-mono, var(--sl-font-system));
+    font-size: 9px;
+  }
+
+  .verification-diagram .link.query {
+    stroke: var(--sl-color-accent);
+    stroke-opacity: 0.65;
+    stroke-dasharray: 4 3;
+  }
+
+  .verification-diagram .test-badge {
+    fill: var(--sl-color-accent);
+  }
+
+  .verification-diagram .test-num {
+    fill: var(--sl-color-black, #f8fafc);
+    font-family: var(--sl-font-system);
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .verification-diagram .result-bar {
+    fill: var(--sl-color-gray-7, var(--sl-color-bg));
+    stroke: var(--sl-color-accent);
+    stroke-opacity: 0.45;
+    stroke-width: 1.5;
+  }
+
+  .verification-diagram .result-title {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .verification-diagram .result-query {
+    fill: var(--sl-color-text);
+    font-family: var(--sl-font-system-mono, var(--sl-font-system));
+    font-size: 12px;
+  }
+
+  .verification-diagram .result-arrow {
+    fill: var(--sl-color-accent);
+    font-family: var(--sl-font-system);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .verification-diagram .result-ip {
+    fill: var(--sl-color-accent);
+    font-family: var(--sl-font-system-mono, var(--sl-font-system));
+    font-size: 13px;
+    font-weight: 600;
+  }
+</style>

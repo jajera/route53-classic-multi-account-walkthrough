@@ -1,0 +1,94 @@
+---
+title: Overview
+description: What this walkthrough covers, repository boundaries, and the phased deployment model
+---
+
+import PhaseDiagram from "@/components/PhaseDiagram.astro";
+import Tooltip from "@/components/Tooltip.astro";
+
+## Purpose
+
+This walkthrough documents how to deploy and operate the [route53-multi-account-dns-demo](https://github.com/jajera/route53-multi-account-dns-demo/tree/1-first-release) — a <Tooltip term="terraform" label="Terraform" /> demo for classic <Tooltip term="route53" label="Route 53" /> private DNS sharing using <Tooltip term="vpc-association-authorization" label="VPC association authorization" />.
+
+A single <Tooltip term="phz" label="private hosted zone" /> (<Tooltip term="platform-zone" label="Platform_Zone" />) in the <Tooltip term="network-account" label="Network_Account" /> serves DNS records; workload VPCs in dev and sandbox associate with that zone across two regions.
+
+The pattern uses `CreateVPCAssociationAuthorization` / `AssociateVPCWithHostedZone`. It does **not** use <Tooltip term="route53-profiles" label="Route 53 Profiles" />, <Tooltip term="aws-ram" label="AWS RAM" />, Transit Gateway, or orchestration scripts.
+
+## Architecture at a glance
+
+![Route 53 multi-account sharing: one Platform_Zone in the network account, VPC associations across dev and sandbox in ap-southeast-2 and ap-southeast-6](/route53-classic-multi-account-walkthrough/architecture-diagram.svg)
+
+Three AWS accounts share one <Tooltip term="platform-zone" label="Platform_Zone" /> (`platform.demo.local`). The network account owns the <Tooltip term="phz" label="PHZ" /> in **ap-southeast-2**; **dev** and **sandbox** VPCs in both regions associate after <Tooltip term="cross-account-sharing" label="cross-account" /> authorization. Same-account VPCs in the network account associate directly.
+
+## Four association scenarios
+
+| Scenario                               | Example stack           | Authorization required?    |
+| -------------------------------------- | ----------------------- | -------------------------- |
+| Cross-account, same region             | `dev-apse2`             | Yes                        |
+| Cross-account, cross-region            | `dev-apse6`             | Yes (correct `vpc_region`) |
+| Same-account, cross-region             | `network-apse6`         | No                         |
+| Same-account, same region (second VPC) | `network` secondary VPC | No                         |
+
+## Accounts, regions, and stacks
+
+Three AWS accounts, two regions (`ap-southeast-2`, `ap-southeast-6`), six Terraform stacks:
+
+| Stack           | Account | Region         | CIDR                      |
+| --------------- | ------- | -------------- | ------------------------- |
+| `network`       | network | ap-southeast-2 | 10.0.0.0/16 + 10.3.0.0/16 |
+| `network-apse6` | network | ap-southeast-6 | 10.10.0.0/16              |
+| `dev-apse2`     | dev     | ap-southeast-2 | 10.1.0.0/16               |
+| `dev-apse6`     | dev     | ap-southeast-6 | 10.11.0.0/16              |
+| `sandbox-apse2` | sandbox | ap-southeast-2 | 10.2.0.0/16               |
+| `sandbox-apse6` | sandbox | ap-southeast-6 | 10.12.0.0/16              |
+
+Shared DNS records (network <Tooltip term="phz" label="PHZ" /> only):
+
+- `api.platform.demo.local` → `10.0.1.10`
+- `db.platform.demo.local` → `10.0.1.20`
+
+Deployment is manual and phased with boolean <Tooltip term="feature-flag" label="feature flags" />. Verification uses seven <Tooltip term="test-ec2" label="Test_EC2" /> instances (one per VPC) with SSM Session Manager and `dig`.
+
+## Phased dependency model
+
+<PhaseDiagram />
+
+| Phase    | Depends on | Why                                                               |
+| -------- | ---------- | ----------------------------------------------------------------- |
+| Phase 2a | Phase 1    | Needs real workload `vpc_id` values for authorizations            |
+| Phase 2b | Phase 2a   | Needs `zone_id` from network stack                                |
+| Phase 3  | Phase 2a   | Needs `zone_id` and authorizations before cross-account associate |
+
+## Walkthrough path
+
+1. [Why Classic](/walkthrough/02-why-classic/) — when this pattern fits and when it does not
+2. [Prerequisites](/walkthrough/03-prerequisites/) — accounts, profiles, Terraform versions
+3. [Pre-flight](/walkthrough/04-preflight/) — checks before every apply
+4. [Deployment Phases](/walkthrough/05-phases/) — Phase 1 through Phase 3
+5. [Verification](/walkthrough/06-verification/) — seven DNS tests
+6. [Troubleshooting](/walkthrough/07-troubleshooting/) — common failure modes
+7. [Teardown](/walkthrough/08-teardown/) — dependency-safe cleanup
+
+For conceptual depth before Phase 2a, read [System Overview](/architecture/01-system-overview/) and [Association Scenarios](/architecture/02-association-scenarios/).
+
+## Version alignment
+
+This walkthrough documents source demo baseline **`main`**.
+
+When the demo repository changes:
+
+1. Note the new tag or branch in this section.
+2. Update command paths and variable names in affected walkthrough pages.
+3. Run `npm run validate` and `npm run build` in this repo.
+4. Re-run the demo phases against the updated source to confirm accuracy.
+
+## Intentionally excluded
+
+The source demo deliberately omits (see also [Why Classic](/walkthrough/02-why-classic/)):
+
+- <Tooltip term="route53-profiles" label="Route 53 Profiles" /> and
+  <Tooltip term="aws-ram" label="AWS RAM" />
+- Resolver query logging, DNS Firewall, outbound resolver rules
+- Alias records, DNSSEC, failover/latency routing
+- Second PHZ or regional zone copies
+- Orchestration or verification scripts

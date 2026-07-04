@@ -1,0 +1,66 @@
+---
+title: System Overview
+description: Pattern summary, accounts, stacks, and Terraform module map in the source demo
+---
+
+import Tooltip from "@/components/Tooltip.astro";
+import SharingFlowDiagram from "@/components/SharingFlowDiagram.astro";
+import TopologyDiagram from "@/components/TopologyDiagram.astro";
+import TerraformModuleMapDiagram from "@/components/TerraformModuleMapDiagram.astro";
+
+## Pattern summary
+
+One <Tooltip term="platform-zone" label="Platform_Zone" /> (`platform.demo.local`) lives in the <Tooltip term="network-account" label="Network_Account" />. Every other VPC **associates** with that zone so workloads resolve the same records regardless of account or region.
+
+| API (concept)                       | Who calls it                 | Purpose                                          |
+| ----------------------------------- | ---------------------------- | ------------------------------------------------ |
+| `CreateVPCAssociationAuthorization` | Network_Account (zone owner) | Permit a specific VPC (id + region) to associate |
+| `AssociateVPCWithHostedZone`        | VPC-owning account           | Link the VPC to the authorized PHZ               |
+
+No <Tooltip term="route53-profiles" label="Route 53 Profiles" />, <Tooltip term="aws-ram" label="AWS RAM" />, Transit Gateway, or orchestration scripts.
+
+<SharingFlowDiagram />
+
+## Accounts, regions, and stacks
+
+Three AWS accounts, two regions, six Terraform stacks in the [source demo repo](https://github.com/jajera/route53-multi-account-dns-demo):
+
+| Stack           | Account | Region         | VPC role                       | CIDR                     |
+| --------------- | ------- | -------------- | ------------------------------ | ------------------------ |
+| `network`       | network | ap-southeast-2 | PHZ owner; primary + secondary | 10.0.0.0/16, 10.3.0.0/16 |
+| `network-apse6` | network | ap-southeast-6 | Same-account cross-region      | 10.10.0.0/16             |
+| `dev-apse2`     | dev     | ap-southeast-2 | Cross-account workload         | 10.1.0.0/16              |
+| `dev-apse6`     | dev     | ap-southeast-6 | Cross-account cross-region     | 10.11.0.0/16             |
+| `sandbox-apse2` | sandbox | ap-southeast-2 | Cross-account workload         | 10.2.0.0/16              |
+| `sandbox-apse6` | sandbox | ap-southeast-6 | Cross-account cross-region     | 10.12.0.0/16             |
+
+Each VPC gets one <Tooltip term="test-ec2" label="Test_EC2" /> in a private subnet (seven instances total) for in-VPC DNS verification via SSM.
+
+## Platform zone and records
+
+All shared DNS records exist **only** in the Network_Account <Tooltip term="phz" label="PHZ" />. Workload accounts resolve names; they do not create local copies.
+
+| Record                    | Type | Value     | Purpose                |
+| ------------------------- | ---- | --------- | ---------------------- |
+| `api.platform.demo.local` | A    | 10.0.1.10 | Primary demo lookup    |
+| `db.platform.demo.local`  | A    | 10.0.1.20 | Optional second record |
+
+Record targets are fictional private IPs — they prove resolution, not reachability.
+
+## Topology
+
+<TopologyDiagram />
+
+## Terraform module map (source demo)
+
+<TerraformModuleMapDiagram />
+
+## Phased dependency view
+
+See [Deployment Phases](/walkthrough/05-phases/) for operational commands.
+
+## Related pages
+
+- [Association Scenarios](/architecture/02-association-scenarios/)
+- [DNS Resolution Path](/architecture/03-dns-resolution-path/)
+- [Security Boundaries](/architecture/04-security-boundaries/)

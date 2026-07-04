@@ -1,0 +1,84 @@
+---
+title: Teardown
+description: Dependency-safe teardown order for the source demo — associations before PHZ delete
+---
+
+import Callout from "@/components/Callout.astro";
+
+Destroy in **reverse dependency order** from the [source demo repository](https://github.com/jajera/route53-multi-account-dns-demo) root.
+
+<Callout type="warning" title="PHZ delete blocked">
+  Route 53 blocks PHZ deletion while cross-account associations exist. Complete
+  Step 1 before destroying the network stack.
+</Callout>
+
+If you enabled **`enable_nat_gateway`** on `*-apse6` stacks, set it back to `false` and apply (or destroy the stack) to stop NAT hourly charges — see [Prerequisites](/walkthrough/03-prerequisites/#optional-nat-for-ap-southeast-6-ssm).
+
+---
+
+## Step 1 — Remove workload associations and EC2
+
+Set flags to `false` and apply with `-var-file=terraform.tfvars` so `zone_id` is preserved. This removes associations and Test EC2 while **keeping VPCs**.
+
+Example — **sandbox-apse6**:
+
+```bash
+export AWS_PROFILE=r53demo-sandbox
+
+terraform -chdir=terraform/accounts/sandbox-apse6 apply \
+  -var-file=terraform/accounts/sandbox-apse6/terraform.tfvars \
+  -var="enable_zone_association=false" \
+  -var="enable_test_ec2=false"
+```
+
+Repeat for: `sandbox-apse2`, `dev-apse6`, `dev-apse2` (with matching profiles).
+
+---
+
+## Step 2 — Remove network-apse6 association and EC2
+
+```bash
+export AWS_PROFILE=r53demo-network
+
+terraform -chdir=terraform/accounts/network-apse6 apply \
+  -var-file=terraform/accounts/network-apse6/terraform.tfvars \
+  -var="enable_zone_association=false" \
+  -var="enable_test_ec2=false"
+```
+
+---
+
+## Step 3 — Destroy network stack
+
+With all cross-account associations removed:
+
+```bash
+export AWS_PROFILE=r53demo-network
+
+terraform -chdir=terraform/accounts/network destroy
+```
+
+Destroys the PHZ, authorizations, both `ap-southeast-2` VPCs, and Test EC2 instances.
+
+---
+
+## Step 4 — Destroy remaining VPCs (optional)
+
+Full cleanup — destroy each Phase 1 stack:
+
+```bash
+export AWS_PROFILE=r53demo-network
+terraform -chdir=terraform/accounts/network-apse6 destroy
+
+export AWS_PROFILE=r53demo-dev
+terraform -chdir=terraform/accounts/dev-apse6 destroy
+terraform -chdir=terraform/accounts/dev-apse2 destroy
+
+export AWS_PROFILE=r53demo-sandbox
+terraform -chdir=terraform/accounts/sandbox-apse6 destroy
+terraform -chdir=terraform/accounts/sandbox-apse2 destroy
+```
+
+## Teardown complete
+
+All demo resources removed. For a fresh run, start again at [Deployment Phases](/walkthrough/05-phases/) Phase 1.

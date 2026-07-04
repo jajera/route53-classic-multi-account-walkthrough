@@ -1,0 +1,65 @@
+---
+title: Association Scenarios
+description: Four Route 53 VPC association scenarios and when authorization is required
+---
+
+import AssociationDecisionDiagram from "@/components/AssociationDecisionDiagram.astro";
+
+## Four scenarios
+
+The source demo covers every combination Route 53 classic auth supports:
+
+| #   | Scenario                            | Example             | Authorization required?             | Who creates association    |
+| --- | ----------------------------------- | ------------------- | ----------------------------------- | -------------------------- |
+| 1   | Cross-account, same region          | `dev-apse2`         | Yes                                 | Dev_Account                |
+| 2   | Cross-account, cross-region         | `dev-apse6`         | Yes (`vpc_region = ap-southeast-6`) | Dev_Account                |
+| 3   | Same-account, cross-region          | `network-apse6`     | No                                  | Network_Account            |
+| 4   | Same-account, same region (2nd VPC) | `network` secondary | No                                  | Network_Account (with PHZ) |
+
+Cross-account flows always require **two parties**: network authorizes in Phase 2a, workload associates in Phase 3. Same-account flows skip authorization.
+
+## Decision flow
+
+<AssociationDecisionDiagram />
+
+## Prerequisites checklist
+
+| Requirement                                      | Cross-account | Same-account | Demo reference              |
+| ------------------------------------------------ | ------------- | ------------ | --------------------------- |
+| PHZ exists (`zone_id` valid)                     | Yes           | Yes          | Phase 2a `zone_id` output   |
+| Target VPC exists                                | Yes           | Yes          | Phase 1 `vpc_id` per stack  |
+| `vpc_region` matches VPC region                  | Yes           | Yes          | `cross-account-auth` module |
+| `VPCAssociationAuthorization` for exact `vpc_id` | Yes           | No           | Phase 2a — `network` stack  |
+| `AssociateVPCWithHostedZone` in VPC account      | Yes           | Yes          | Phase 2b / Phase 3          |
+| VPC DNS support and hostnames enabled            | Yes           | Yes          | VPC module defaults         |
+
+## Two-party operations
+
+| Action               | API                                 | Who                | Demo phase                                   |
+| -------------------- | ----------------------------------- | ------------------ | -------------------------------------------- |
+| Create authorization | `CreateVPCAssociationAuthorization` | Network_Account    | 2a                                           |
+| Associate VPC        | `AssociateVPCWithHostedZone`        | VPC-owning account | 2b / 3                                       |
+| Disassociate VPC     | `DisassociateVPCFromHostedZone`     | VPC-owning account | Teardown Step 1                              |
+| Delete authorization | `DeleteVPCAssociationAuthorization` | Network_Account    | `network` destroy                            |
+| Delete PHZ           | `DeleteHostedZone`                  | Network_Account    | After all cross-account associations removed |
+
+Terraform resources in the source demo:
+
+- `aws_route53_vpc_association_authorization` — `cross-account-auth` module
+- `aws_route53_zone_association` — workload stacks and `network-apse6`
+- `aws_route53_zone` + primary VPC block — `private-hosted-zone` module
+
+## Common failure modes
+
+| Symptom                       | Likely cause                           |
+| ----------------------------- | -------------------------------------- |
+| `AccessDenied` on associate   | Missing or stale authorization         |
+| `AccessDenied` cross-region   | Wrong `vpc_region` on authorization    |
+| Step A OK, Step B empty `dig` | Propagation delay or association drift |
+
+See [Troubleshooting](/walkthrough/07-troubleshooting/) for step-by-step fixes.
+
+## Related pages
+
+- [Deployment Phases](/walkthrough/05-phases/)
+- [Security Boundaries](/architecture/04-security-boundaries/)

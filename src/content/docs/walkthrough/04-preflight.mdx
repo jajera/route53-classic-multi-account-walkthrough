@@ -1,0 +1,65 @@
+---
+title: Pre-flight
+description: Checks to run before every terraform apply or destroy in the source demo repository
+---
+
+import Callout from "@/components/Callout.astro";
+
+## Objective
+
+Confirm account context, variable completeness, and plan safety **before every** `terraform apply` or `terraform destroy` in the [source demo repo](https://github.com/jajera/route53-multi-account-dns-demo).
+
+## Checklist
+
+1. Set `AWS_PROFILE` for the account you are working in
+2. Confirm identity: `aws sts get-caller-identity`
+3. **Phase 2b / Phase 3 / teardown:** use `terraform.tfvars` (from `terraform.tfvars.example`) or pass **`zone_id`** plus all phase flags on every apply — including NAT or SSM toggles
+4. Run from the **demo repository root** using `-chdir`
+
+## Init, validate, plan
+
+Replace `<stack>` with the target stack (e.g. `dev-apse2`, `network`):
+
+```bash
+terraform -chdir=terraform/accounts/<stack> init
+terraform -chdir=terraform/accounts/<stack> validate
+terraform -chdir=terraform/accounts/<stack> plan
+```
+
+| Command    | Purpose                                                |
+| ---------- | ------------------------------------------------------ |
+| `init`     | Download providers and initialize backend              |
+| `validate` | Confirm HCL syntax and provider schema                 |
+| `plan`     | Preview resource graph (recommended before live demos) |
+
+## Phase 3 pre-flight — VPC ID match
+
+Before Phase 3, confirm each workload VPC ID still matches what network authorized in Phase 2a:
+
+```bash
+terraform -chdir=terraform/accounts/dev-apse2 output vpc_id
+terraform -chdir=terraform/accounts/dev-apse6 output vpc_id
+terraform -chdir=terraform/accounts/sandbox-apse2 output vpc_id
+terraform -chdir=terraform/accounts/sandbox-apse6 output vpc_id
+
+grep -E 'dev_apse|sandbox_apse' terraform/accounts/network/terraform.tfvars
+```
+
+If they differ, update `terraform/accounts/network/terraform.tfvars` and re-apply Phase 2a before continuing.
+
+## zone_id guardrail
+
+When `enable_zone_association=true`, workload stacks and `network-apse6` validate that `zone_id` is non-empty. Re-applying without `zone_id` must fail validation rather than destroy an existing association.
+
+<Callout type="caution" title="Always use -var-file on Phase 2b+">
+  Use `-var-file=terraform.tfvars` (or an equivalent full `-var` set including
+  `zone_id`) on every Phase 2b, Phase 3, and teardown apply.
+</Callout>
+
+## Before Phase 2a
+
+Read [Security Boundaries](/architecture/04-security-boundaries/) for the cross-account two-step contract summary, then proceed to [Deployment Phases](/walkthrough/05-phases/).
+
+## Next step
+
+[Deployment Phases](/walkthrough/05-phases/) — Phase 1 through Phase 3.

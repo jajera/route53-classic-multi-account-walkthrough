@@ -1,0 +1,152 @@
+---
+/** Classic Route 53 sharing contract — network authorizes, workload associates */
+---
+
+<figure class="sharing-flow-diagram">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 720 210"
+    fill="none"
+    role="img"
+    aria-label="Network account owns Platform_Zone and creates VPCAssociationAuthorization in Phase 2a; workload account creates AssociateVPCWithHostedZone in Phase 3"
+  >
+    <defs>
+      <marker
+        id="sharing-flow-arrowhead"
+        markerWidth="8"
+        markerHeight="8"
+        refX="7"
+        refY="4"
+        orient="auto"
+      >
+        <polygon class="arrow-head" points="0 0, 8 4, 0 8"></polygon>
+      </marker>
+    </defs>
+
+    <rect class="frame" x="1" y="1" width="718" height="208" rx="10"></rect>
+
+    <text class="column-title" x="180" y="22" text-anchor="middle"
+      >Network_Account</text
+    >
+    <line class="column-rule" x1="20" y1="30" x2="340" y2="30"></line>
+
+    <text class="column-title" x="540" y="22" text-anchor="middle"
+      >Workload account (dev / sandbox)</text
+    >
+    <line class="column-rule" x1="380" y1="30" x2="700" y2="30"></line>
+
+    <rect class="node" x="60" y="48" width="240" height="40" rx="6"></rect>
+    <text class="node-label" x="180" y="73" text-anchor="middle"
+      >Platform_Zone</text
+    >
+
+    <rect class="node" x="420" y="48" width="240" height="40" rx="6"></rect>
+    <text class="node-label" x="540" y="73" text-anchor="middle">VPC</text>
+
+    <path class="spine" d="M 180 88 L 180 108"></path>
+    <path class="spine" d="M 540 88 L 540 108"></path>
+
+    <path class="spine" d="M 180 108 L 120 108"></path>
+    <text class="detail" x="120" y="124" text-anchor="middle"
+      >records (api, db)</text
+    >
+
+    <path class="spine" d="M 180 108 L 180 138"></path>
+    <path class="spine" d="M 540 108 L 540 138"></path>
+
+    <rect class="node accent" x="40" y="138" width="280" height="48" rx="6"
+    ></rect>
+    <text class="node-label" x="180" y="160" text-anchor="middle"
+      >VPCAssociationAuthorization</text
+    >
+    <text class="phase" x="180" y="176" text-anchor="middle">(Phase 2a)</text>
+
+    <rect class="node accent" x="400" y="138" width="280" height="48" rx="6"
+    ></rect>
+    <text class="node-label" x="540" y="160" text-anchor="middle"
+      >AssociateVPCWithHostedZone</text
+    >
+    <text class="phase" x="540" y="176" text-anchor="middle">(Phase 3)</text>
+
+    <path
+      class="arrow"
+      d="M 320 162 L 360 162 L 360 162 L 400 162"
+      marker-end="url(#sharing-flow-arrowhead)"></path>
+  </svg>
+</figure>
+
+<style>
+  .sharing-flow-diagram {
+    margin: 1rem 0;
+  }
+
+  .sharing-flow-diagram svg {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+  }
+
+  .frame {
+    fill: var(--sl-color-gray-6);
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 1.5;
+  }
+
+  .column-title {
+    fill: var(--sl-color-text);
+    font-family: var(--sl-font-system);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .column-rule {
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 1.5;
+  }
+
+  .node {
+    fill: var(--sl-color-gray-6);
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 1.5;
+  }
+
+  .node.accent {
+    stroke: var(--sl-color-accent);
+  }
+
+  .node-label {
+    fill: var(--sl-color-text);
+    font-family: var(--sl-font-system-mono, var(--sl-font-system));
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .detail {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system);
+    font-size: 11px;
+  }
+
+  .phase {
+    fill: var(--sl-color-gray-3);
+    font-family: var(--sl-font-system);
+    font-size: 11px;
+  }
+
+  .spine {
+    stroke: var(--sl-color-gray-4);
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  .arrow {
+    stroke: var(--sl-color-accent);
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  .arrow-head {
+    fill: var(--sl-color-accent);
+  }
+</style>

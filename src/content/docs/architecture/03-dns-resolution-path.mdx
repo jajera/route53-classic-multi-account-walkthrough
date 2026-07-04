@@ -1,0 +1,37 @@
+---
+title: DNS Resolution Path
+description: How DNS queries flow from Test_EC2 to Platform_Zone records across accounts and regions
+---
+
+import DnsResolutionDiagram from "@/components/DnsResolutionDiagram.astro";
+
+## Resolution path
+
+<DnsResolutionDiagram />
+
+## Key properties
+
+1. **Resolution consistency** — every associated VPC resolves `api.platform.demo.local` to `10.0.1.10` regardless of same/cross-account or same/cross-region
+2. **Association is the prerequisite** — VPC association enables DNS answers; it does not grant network connectivity to record IP targets
+3. **Single authoritative zone** — all records live in the Network_Account PHZ; workload accounts never create local PHZ copies
+4. **Propagation delay** — after a new association, allow **1–2 minutes** before expecting in-VPC `dig` to answer
+
+## Verification model
+
+Seven **Test_EC2** instances (one per VPC) run `dig +short api.platform.demo.local` via SSM Session Manager. See [Verification](/walkthrough/06-verification/) for the full test matrix.
+
+### ap-southeast-6 caveat
+
+Route 53 resolution works independently of SSM. For `*-apse6` stacks:
+
+- **Step A** — `aws route53 list-hosted-zones-by-vpc` proves association without shell access
+- **Step B** — in-VPC `dig` when SSM is available
+
+## DNS vs network reachability
+
+Demo A record targets (`10.0.1.10`, `10.0.1.20`) are fictional private IPs in the network primary CIDR. Successful `dig` proves **DNS resolution** — not that traffic can route to those addresses across VPC boundaries.
+
+## Related pages
+
+- [Verification](/walkthrough/06-verification/)
+- [Security Boundaries](/architecture/04-security-boundaries/)
