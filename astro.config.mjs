@@ -4,8 +4,8 @@ import starlightThemeVintage from "starlight-theme-vintage";
 import { starlightBasePath } from "starlight-base-path";
 
 export default defineConfig({
-  site: "https://jajera.github.io",
-  base: "/route53-classic-multi-account-walkthrough/",
+  site: "https://route53-classic-multi-account-walkthrough.johna.kiwi",
+  base: "/",
   integrations: [
     starlight({
       title: "Amazon Route 53 Classic Multi-Account Walkthrough",
