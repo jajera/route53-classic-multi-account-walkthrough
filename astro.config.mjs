@@ -8,6 +8,9 @@ export default defineConfig({
   base: "/",
   integrations: [
     starlight({
+      components: {
+        Head: "./src/components/Head.astro",
+      },
       title: "Amazon Route 53 Classic Multi-Account Walkthrough",
       favicon: "/favicon.svg",
       description:
