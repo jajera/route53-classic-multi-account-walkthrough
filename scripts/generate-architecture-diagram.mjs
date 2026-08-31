@@ -507,7 +507,7 @@ function buildOgImage(diagramCore) {
   <rect x="${padX}" y="${frameY}" width="${availW}" height="${frameH}" rx="12" fill="#1a2332" stroke="#7B68EE" stroke-width="1" opacity="0.7"/>
   <g clip-path="url(#diagramClip)"><g transform="translate(${diagramX} ${diagramY}) scale(${scale})">${diagramCore}</g></g>
   <text x="${width / 2}" y="${height - 46}" text-anchor="middle" fill="#9b92b0" font-family="sans-serif" font-size="20">Classic VPC association authorization · no Profiles or RAM</text>
-  <text x="${width / 2}" y="${height - 22}" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="18">jajera.github.io/route53-classic-multi-account-walkthrough</text>
+  <text x="${width / 2}" y="${height - 22}" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="18">route53-classic-multi-account-walkthrough.johna.kiwi</text>
 </svg>`;
 }
 

@@ -2,7 +2,7 @@
 
 Step-by-step documentation site for deploying the [route53-multi-account-dns-demo](https://github.com/jajera/route53-multi-account-dns-demo) Terraform demo — classic Route 53 private DNS sharing across three AWS accounts and two regions.
 
-Published at [jajera.github.io/route53-classic-multi-account-walkthrough](https://route53-classic-multi-account-walkthrough.johna.kiwi/).
+Published at [route53-classic-multi-account-walkthrough.johna.kiwi](https://route53-classic-multi-account-walkthrough.johna.kiwi/).
 
 ## What this is / What this is not
 
@@ -30,7 +30,7 @@ npm run build      # astro build (also npm test)
 
 ## Version alignment
 
-This walkthrough documents source demo baseline **`main`**. When the demo repo changes stack layout, variables, or phase flow, update the matching walkthrough pages and bump the version note in [Overview](/route53-classic-multi-account-walkthrough/walkthrough/01-overview/).
+This walkthrough documents source demo baseline **`main`**. When the demo repo changes stack layout, variables, or phase flow, update the matching walkthrough pages and bump the version note in [Overview](/walkthrough/01-overview/).
 
 ## About
 
