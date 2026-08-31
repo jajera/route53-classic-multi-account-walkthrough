@@ -1,6 +1,5 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import starlightThemeVintage from "starlight-theme-vintage";
 import { starlightBasePath } from "starlight-base-path";
 
 export default defineConfig({
@@ -8,32 +7,20 @@ export default defineConfig({
   base: "/",
   integrations: [
     starlight({
-      components: {
-        Head: "./src/components/Head.astro",
-      },
       title: "Amazon Route 53 Classic Multi-Account Walkthrough",
       favicon: "/favicon.svg",
       description:
         "Step-by-step walkthrough for classic Route 53 private DNS sharing across AWS accounts and regions using VPC association authorization.",
-      head: [
-        {
-          tag: "meta",
-          attrs: {
-            property: "og:image",
-            content:
-              "https://jajera.github.io/route53-classic-multi-account-walkthrough/og-image.png",
-          },
-        },
-        {
-          tag: "meta",
-          attrs: {
-            name: "twitter:image",
-            content:
-              "https://jajera.github.io/route53-classic-multi-account-walkthrough/og-image.png",
-          },
-        },
+      plugins: [starlightBasePath()],
+      routeMiddleware: "./src/routeData.ts",
+      customCss: [
+        "./src/styles/patina-tokens.css",
+        "./src/styles/splash-overrides.css",
       ],
-      plugins: [starlightThemeVintage(), starlightBasePath()],
+      components: {
+        ThemeSelect: "./src/components/ThemeSelect.astro",
+        Head: "./src/components/Head.astro",
+      },
       social: [
         {
           icon: "github",

@@ -16,7 +16,7 @@ The pattern uses `CreateVPCAssociationAuthorization` / `AssociateVPCWithHostedZo
 
 ## Architecture at a glance
 
-![Route 53 multi-account sharing: one Platform_Zone in the network account, VPC associations across dev and sandbox in ap-southeast-2 and ap-southeast-6](/route53-classic-multi-account-walkthrough/architecture-diagram.svg)
+![Route 53 multi-account sharing: one Platform_Zone in the network account, VPC associations across dev and sandbox in ap-southeast-2 and ap-southeast-6](/architecture-diagram.svg)
 
 Three AWS accounts share one <Tooltip term="platform-zone" label="Platform_Zone" /> (`platform.demo.local`). The network account owns the <Tooltip term="phz" label="PHZ" /> in **ap-southeast-2**; **dev** and **sandbox** VPCs in both regions associate after <Tooltip term="cross-account-sharing" label="cross-account" /> authorization. Same-account VPCs in the network account associate directly.
 
